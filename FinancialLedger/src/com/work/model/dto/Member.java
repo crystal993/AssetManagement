@@ -32,10 +32,7 @@ public class Member {
 	private String date;
 	
 	/**회원 예산 : 선택*/
-	private String budget;
-	
-//	/** 회원 금액 : 선택 */
-//	int amount;
+	private int budget;
 	
 	/**회원 수입 : 선택 */
 	private int income;
@@ -60,7 +57,64 @@ public class Member {
 	public Member() {
 		// TODO Auto-generated constructor stub
 	}
+	
+	
+	/**
+	 * 생성자 - 사용자 입력 필수 데이터
+	 * @param memberId 아이디 
+	 * @param memberPw 비밀번호
+	 * @param name 이름
+	 * @param mobile 휴대폰
+	 * @param email 이메일
+	 */
+	public Member(String memberId, String memberPw, String name, String mobile, String email) {
+		this.memberId = memberId;
+		this.memberPw = memberPw;
+		this.name = name;
+		this.mobile = mobile;
+		this.email = email;
+	}
+	
 
+	/**
+	 * 생성자 - 전체 필수 데이터
+	 * @param memberId 아이디 
+	 * @param memberPw 비밀번호
+	 * @param name 이름
+	 * @param mobile 휴대폰
+	 * @param email 이메일
+	 * @param date 가입일
+	 */
+	public Member(String memberId, String memberPw, String name, String mobile, String email, String date) {
+		this(memberId, memberPw, name, mobile, email);
+		this.date= date;
+	}
+	
+	
+	/**
+	 * 생성자 - 전체 데이터 
+	 * @param memberId 아이디 
+	 * @param memberPw 비밀번호
+	 * @param name 이름
+	 * @param mobile 휴대폰
+	 * @param email 이메일
+	 * @param date 가입일
+	 * @param budget 예산
+	 * @param income 수입
+	 * @param spend 지출
+	 * @param amount 금액 //amount 파라미터로 존재하는데 빼야되면 빼기
+	 * @param methodPayment 결제수단
+	 */
+	public Member(String memberId, String memberPw, String name, String mobile, String email, String date, 
+			int budget, int income, int spend, int amount, String methodPayment) {
+		this(memberId, memberPw, name, mobile, email,date);
+		this.budget = 0;
+		this.income = 0;
+		this.spend = 0;
+//		this.amount = 0;
+		this.methodPayment = "기본";
+	}
+	
 
 	/**
 	 * @return the memberId
@@ -161,7 +215,7 @@ public class Member {
 	/**
 	 * @return the budget
 	 */
-	public String getBudget() {
+	public int getBudget() {
 		return budget;
 	}
 
@@ -169,7 +223,7 @@ public class Member {
 	/**
 	 * @param budget the budget to set
 	 */
-	public void setBudget(String budget) {
+	public void setBudget(int budget) {
 		this.budget = budget;
 	}
 
