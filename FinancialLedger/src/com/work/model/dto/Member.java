@@ -306,25 +306,36 @@ public class Member {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
+		builder.append("\t ▶ 아이디 : ");
 		builder.append(memberId);
-		builder.append(", ");
+		builder.append("\n");
+		builder.append("\t ▶ 비밀번호 : ");
 		builder.append(memberPw);
-		builder.append(", ");
+		builder.append("\n");
+		builder.append("\t ▶ 이름 : ");
 		builder.append(name);
-		builder.append(", ");
+		builder.append("\n");
+		builder.append("\t ▶ 휴대폰 : ");
 		builder.append(mobile);
-		builder.append(", ");
+		builder.append("\n");
+		builder.append("\t ▶ 이메일 : ");
 		builder.append(email);
-		builder.append(", ");
+		builder.append("\n");
+		builder.append("\t ▶ 날짜 : ");
 		builder.append(date);
-		builder.append(", ");
+		builder.append("\n");
+		builder.append("\t ▶ 예산 : ");
 		builder.append(budget);
-		builder.append(", ");
+		builder.append("\n");
+		builder.append("\t ▶ 수입 : ");
 		builder.append(income);
-		builder.append(", ");
+		builder.append("\n");
+		builder.append("\t ▶ 지출 : ");
 		builder.append(spend);
-		builder.append(", ");
+		builder.append("\n");
+		builder.append("\t ▶ 결제수단 : ");
 		builder.append(methodPayment);
+		builder.append("\n");
 		return builder.toString();
 	}
 	

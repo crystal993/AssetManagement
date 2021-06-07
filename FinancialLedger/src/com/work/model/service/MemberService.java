@@ -10,6 +10,7 @@ import com.work.exception.CommonException;
 import com.work.exception.DuplicateException;
 import com.work.exception.RecordNotFoundException;
 import com.work.model.dto.Member;
+import com.work.util.*;
 
 /**
  * <pre>
@@ -26,6 +27,7 @@ public class MemberService {
 	
 	/**회원들을 관리하기 위한 저장 구조 - ArrayList*/
 	private ArrayList<Member> members = new ArrayList<Member>();
+	public String currentMemberId = null;
 	
 	/** 기본 생성자 */
 	public MemberService() {
@@ -136,6 +138,21 @@ public class MemberService {
 	 * @param dto 회원
 	 * @return 존재하면 회원 반환, 존재하지 않으면 오류
 	 * @throws RecordNotFoundException 
+	 * @throws CommonException 
+	 */
+	public Member getMember(String memberId, String memberPw) throws RecordNotFoundException, CommonException {
+		Member dto = getMember(memberId);
+		if(dto.getMemberPw().equals(memberPw)) {
+			return dto;
+		}
+		throw new CommonException("회원의 정보가 올바르지 않습니다.");
+	}
+	
+	/**
+	 * 회원 조회 3 - 로그인에 쓸 메서드
+	 * @param memberId 아이디
+	 * @return 존재하면 회원 반환, 존재하지 않으면 오류
+	 * @throws RecordNotFoundException 
 	 */
 	public Member getMember(String memberId) throws RecordNotFoundException {
 		int index = exist(memberId);
@@ -172,9 +189,10 @@ public class MemberService {
 	 */
 	public boolean setMemberPw(String memberId, String memberPw, String modifyMemberPw) throws RecordNotFoundException {
 		int index = exist(memberId);
+		Member dto = members.get(index);
 		
-		if(index >= 0 && members.get(index).getMemberPw().equals(memberPw) ) {
-			members.get(index).setMemberPw(modifyMemberPw);
+		if(index >= 0 && dto.getMemberPw().equals(memberPw) ) {
+			dto.setMemberPw(modifyMemberPw);
 			return true;
 		}	
 		//return false;
@@ -212,6 +230,7 @@ public class MemberService {
 		
 		Member dto = getMember(memberId);
 		if(dto.getMemberPw().equals(memberPw)) {
+			currentMemberId = memberId;
 			return true;
 		}
 		throw new CommonException("회원의 정보가 올바르지 않습니다.");
@@ -219,7 +238,12 @@ public class MemberService {
 	}
 	
 	
-	//아이디 찾기 1
+	/**
+	 * 아이디 찾기1 - 휴대폰
+	 * @param mobile 휴대폰
+	 * @return 휴대폰 번호가 존재하면 해당 인스턴스의 아이디를 반환
+	 * @throws CommonException
+	 */
 	public String findId1(String mobile) throws CommonException {
 		for(int index = 0 ; index < members.size() ; index++) {
 			if(members.get(index).getMobile().equals(mobile)) {
@@ -229,7 +253,12 @@ public class MemberService {
 		throw new CommonException("존재하지 않거나 잘못 입력된 번호입니다.");
 	}
 	
-	// 아이디 찾기 2
+	/**
+	 * 아이디 찾기2 - 이메일
+	 * @param email 이메일
+	 * @return 이메일이 존재하면 해당 인스턴스의 아이디를 반환
+	 * @throws CommonException
+	 */
 	public String findId2(String email) throws CommonException {
 		for(int index = 0 ; index < members.size() ; index++) {
 			if(members.get(index).getEmail().equals(email)) {
@@ -238,8 +267,27 @@ public class MemberService {
 		}
 		throw new CommonException("존재하지 않거나 잘못 입력된 번호입니다.");
 	}	
-	//비밀번호 찾기
 	
 	
+	/**
+	 * 비밀번호 찾기
+	 * @param memberId 아이디
+	 * @param mobile 휴대폰
+	 * @return 아이디와 휴대폰 번호가 맞으면(true) 임시 비밀번호를 기존 비밀번호에 업데이트 후 반환, false이면 오류메세지
+	 * @throws CommonException
+	 */
+	public String findPw(String memberId, String mobile) throws CommonException {
+		Utility util = new Utility();
+		
+		
+		int index = exist(memberId);
+			if(members.get(index).getMobile().equals(mobile)) {
+				String tempMemberPw =  util.getSecureAlphabetString(8, false, true);
+				members.get(index).setMemberPw(tempMemberPw);
+				return tempMemberPw;
+			}
+		
+		throw new CommonException("존재하지 않거나 잘못 입력된 번호입니다.");
+	}
 	
 }
