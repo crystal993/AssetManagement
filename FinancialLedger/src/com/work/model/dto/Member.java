@@ -3,6 +3,10 @@
  */
 package com.work.model.dto;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
+
 /**
  * <pre>
  * 회원 도메인 클래스
@@ -31,24 +35,23 @@ public class Member {
 	/**회원 가입일 : 필수, 시스템 제공 */
 	private String date;
 	
-	/**회원 예산 : 선택*/
+	/** 예산 : 필수*/
 	private int budget;
 	
-	/**회원 수입 : 선택 */
-	private int income;
+	/**지출 : 필수*/
+//	private int spend;
 	
-	/**회원 지출 : 선택 */
-	private int spend;
+	/**예산 : 필수*/
+// private int budget;
 	
-	/**회원 결제 수단 : 선택, (CARD, CASH, ACCOUNT) */
-	private String methodPayment;
+	ArrayList<String> incomeDates = new ArrayList<String>();
+	ArrayList<Integer> income = new ArrayList<Integer>();
+	ArrayList<Integer> spend = new ArrayList<Integer>();
+	ArrayList<String> sources = new ArrayList<String>();
+	int balance = 0;
+	int totalInMoney = 0;
+	int totalOutMoney = 0;
 	
-//	/** 회원 금액 : 선택 */
-//	int amount;
-	
-//	/** 조회 항목 : 의류, 주거, 식비, 취미, 교통 */
-//	
-//	/** 수입 출처 : 월급, 배당금, 용돈, 기타 */
 	
 	
 	/**
@@ -56,6 +59,7 @@ public class Member {
 	 */
 	public Member() {
 		// TODO Auto-generated constructor stub
+		
 	}
 	
 	
@@ -90,30 +94,6 @@ public class Member {
 		this.date= date;
 	}
 	
-	
-	/**
-	 * 생성자 - 전체 데이터 
-	 * @param memberId 아이디 
-	 * @param memberPw 비밀번호
-	 * @param name 이름
-	 * @param mobile 휴대폰
-	 * @param email 이메일
-	 * @param date 가입일
-	 * @param budget 예산
-	 * @param income 수입
-	 * @param spend 지출
-	 * @param amount 금액 //amount 파라미터로 존재하는데 빼야되면 빼기
-	 * @param methodPayment 결제수단
-	 */
-	public Member(String memberId, String memberPw, String name, String mobile, String email, String date, 
-			int budget, int income, int spend, int amount, String methodPayment) {
-		this(memberId, memberPw, name, mobile, email,date);
-		this.budget = 0;
-		this.income = 0;
-		this.spend = 0;
-//		this.amount = 0;
-		this.methodPayment = "기본";
-	}
 	
 
 	/**
@@ -211,14 +191,12 @@ public class Member {
 		this.date = date;
 	}
 
-
 	/**
 	 * @return the budget
 	 */
 	public int getBudget() {
 		return budget;
 	}
-
 
 	/**
 	 * @param budget the budget to set
@@ -227,11 +205,106 @@ public class Member {
 		this.budget = budget;
 	}
 
+	
+	
+//	/**
+//	 * @return the itemSpend
+//	 */
+//	public HashMap<String, Integer> getItemSpend() {
+//		return itemSpend;
+//	}
+//
+//	/**
+//	 * @param itemSpend the itemSpend to set
+//	 */
+//	public void setItemSpend(HashMap<String, Integer> itemSpend) {
+//		this.itemSpend = itemSpend;
+//	}
+//
+//	/**
+//	 * @return the dateSpend
+//	 */
+//	public HashMap<String, Integer> getDateSpend() {
+//		return dateSpend;
+//	}
+//
+//	/**
+//	 * @param dateSpend the dateSpend to set
+//	 */
+//	public void setDateSpend(HashMap<String, Integer> dateSpend) {
+//		this.dateSpend = dateSpend;
+//	}
+//
+//	/**
+//	 * @return the typeSpend
+//	 */
+//	public HashMap<String, Integer> getTypeSpend() {
+//		return typeSpend;
+//	}
+//
+//	/**
+//	 * @param typeSpend the typeSpend to set
+//	 */
+//	public void setTypeSpend(HashMap<String, Integer> typeSpend) {
+//		this.typeSpend = typeSpend;
+//	}
+//
+//	/**
+//	 * @return the itemIncome
+//	 */
+//	public HashMap<String, Integer> getItemIncome() {
+//		return itemIncome;
+//	}
+//
+//	/**
+//	 * @param itemIncome the itemIncome to set
+//	 */
+//	public void setItemIncome(HashMap<String, Integer> itemIncome) {
+//		this.itemIncome = itemIncome;
+//	}
+//
+//	/**
+//	 * @return the dateIncome
+//	 */
+//	public HashMap<String, Integer> getDateIncome() {
+//		return dateIncome;
+//	}
+//
+//	/**
+//	 * @param dateIncome the dateIncome to set
+//	 */
+//	public void setDateIncome(HashMap<String, Integer> dateIncome) {
+//		this.dateIncome = dateIncome;
+//	}
+
+
+
+	/**
+	 * @return the incomeDates
+	 */
+	public ArrayList<String> getIncomeDates() {
+		return incomeDates;
+	}
+
+
+	/**
+	 * @param incomeDates the incomeDates to set
+	 */
+	public void setIncomeDates(ArrayList<String> incomeDates) {
+		this.incomeDates = incomeDates;
+	}
+
+	
+	public void setIncomeDate(String date) {
+		// TODO Auto-generated method stub
+		this.incomeDates.add(date);
+	}
+	
 
 	/**
 	 * @return the income
 	 */
-	public int getIncome() {
+	public ArrayList<Integer> getIncome() {
 		return income;
 	}
 
@@ -239,15 +312,23 @@ public class Member {
 	/**
 	 * @param income the income to set
 	 */
-	public void setIncome(int income) {
+	public void setIncome(ArrayList<Integer> income) {
 		this.income = income;
 	}
+	
+	/**
+	 * @param income the income to set
+	 */
+	public void setIncome(int income) {
+		this.income.add(income);
+	}
+
 
 
 	/**
 	 * @return the spend
 	 */
-	public int getSpend() {
+	public ArrayList<Integer> getSpend() {
 		return spend;
 	}
 
@@ -255,27 +336,77 @@ public class Member {
 	/**
 	 * @param spend the spend to set
 	 */
-	public void setSpend(int spend) {
+	public void setSpend(ArrayList<Integer> spend) {
 		this.spend = spend;
 	}
 
 
 	/**
-	 * @return the methodPayment
+	 * @return the sources
 	 */
-	public String getMethodPayment() {
-		return methodPayment;
+	public ArrayList<String> getSources() {
+		return sources;
 	}
 
 
 	/**
-	 * @param methodPayment the methodPayment to set
+	 * @param sources the sources to set
 	 */
-	public void setMethodPayment(String methodPayment) {
-		this.methodPayment = methodPayment;
+	public void setSources(ArrayList<String> sources) {
+		this.sources = sources;
 	}
 
-	
+
+	/**
+	 * @return the balance
+	 */
+	public int getBalance() {
+		return balance;
+	}
+
+
+	/**
+	 * @param balance the balance to set
+	 */
+	public void setBalance(int balance) {
+		this.balance = balance;
+	}
+
+
+	/**
+	 * @return the totalInMoney
+	 */
+	public int getTotalInMoney() {
+		return totalInMoney;
+	}
+
+
+	/**
+	 * @param totalInMoney the totalInMoney to set
+	 */
+	public void setTotalInMoney(int totalInMoney) {
+		this.totalInMoney = totalInMoney;
+	}
+
+
+	/**
+	 * @return the totalOutMoney
+	 */
+	public int getTotalOutMoney() {
+		return totalOutMoney;
+	}
+
+
+	/**
+	 * @param totalOutMoney the totalOutMoney to set
+	 */
+	public void setTotalOutMoney(int totalOutMoney) {
+		this.totalOutMoney = totalOutMoney;
+	}
+
+
+
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -324,20 +455,45 @@ public class Member {
 		builder.append("\t ▶ 날짜 : ");
 		builder.append(date);
 		builder.append("\n");
-		builder.append("\t ▶ 예산 : ");
-		builder.append(budget);
-		builder.append("\n");
-		builder.append("\t ▶ 수입 : ");
-		builder.append(income);
-		builder.append("\n");
-		builder.append("\t ▶ 지출 : ");
-		builder.append(spend);
-		builder.append("\n");
-		builder.append("\t ▶ 결제수단 : ");
-		builder.append(methodPayment);
-		builder.append("\n");
 		return builder.toString();
 	}
+
+
+	public String getIncomeDates(int index) {
+		// TODO Auto-generated method stub
+		return incomeDates.get(index);
+	}
+	
+	public int getIncomeDates(String date) {
+		
+		for(int index = 0; index < incomeDates.size() ; index++) {
+			if(incomeDates.get(index).equals(date)) {
+				return index;
+			}
+		}
+		return -1;
+	}
+	
+
+	public Object getIncome(int index) {
+		// TODO Auto-generated method stub
+		return income.get(index);
+	}
+
+
+	public String getSources(int index) {
+		// TODO Auto-generated method stub
+		return sources.get(index);
+	}
+
+
+	public void setSources(String string) {
+		// TODO Auto-generated method stub
+		this.sources.add(string);
+	}
+
+
+
 	
 	
 }

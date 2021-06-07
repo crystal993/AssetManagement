@@ -20,15 +20,15 @@ public class CUITest {
 
 	public static void main(String[] args) throws RecordNotFoundException, CommonException, DuplicateException {
 		/* 초기 화면 메뉴 */
-		IntroMenu introView = new IntroMenu();
+		IntroMenu view = new IntroMenu();
 		
 		/* 초기화 회원 등록 */
-		introView.service.initMembers();
-		
+		view.service.initMembers();
+
 		/* 초기화 메뉴 수행 */
 		while(true) {
 			try {
-				introView.introMenu();
+				view.introMenu();
 					
 			} catch (IllegalStateException e) {
 				break;

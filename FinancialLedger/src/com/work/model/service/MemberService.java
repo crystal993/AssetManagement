@@ -27,7 +27,23 @@ public class MemberService {
 	
 	/**회원들을 관리하기 위한 저장 구조 - ArrayList*/
 	private ArrayList<Member> members = new ArrayList<Member>();
+	
+	/***/
 	public String currentMemberId = null;
+	
+	
+	//지출 
+	ArrayList<String> incomeDates = new ArrayList<String>();
+	ArrayList<Integer> income = new ArrayList<Integer>();
+	ArrayList<Integer> spend = new ArrayList<Integer>();
+	ArrayList<String> sources = new ArrayList<String>();
+	
+	
+	int balance = 0;
+	int sumItemIncome = 0;
+	int sumDateIncome = 0;
+	int totalOutMoney = 0;
+	
 	
 	/** 기본 생성자 */
 	public MemberService() {
@@ -35,8 +51,9 @@ public class MemberService {
 	}
 	
 	/**회원 초기화 - 테스트를 위함
-	 * @throws DuplicateException */
-	public int initMembers( ) throws DuplicateException {
+	 * @throws DuplicateException 
+	 * @throws CommonException */
+	public int initMembers( ) throws DuplicateException, CommonException {
 		Member dto1 = new Member("user01", "password01", "홍길동", "01012341000", "user01@work.com");
 		Member dto2 = new Member("user02", "password02", "강감찬", "01012342000", "user02@work.com");
 		Member dto3 = new Member("user03", "password03", "이순신", "01012343000", "user03@work.com");
@@ -48,6 +65,14 @@ public class MemberService {
 		addMember(dto3);
 		addMember(dto4);
 		addMember(dto5);
+		
+		addIncome(dto1,"2021-06-04",5000,"배당금");
+		addIncome(dto1,"2021-06-04",5000,"용돈");
+		addIncome(dto1,"2021-06-05",2000,"용돈");
+		addIncome(dto1,"2021-06-07",3000,"배당금");
+		addIncome(dto1,"2021-06-07",3000,"용돈");
+		
+		
 		
 		return members.size();
 	}
@@ -75,6 +100,7 @@ public class MemberService {
 	public int exist(String memberId) {
 		for(int index = 0; index < members.size() ; index++) {
 			if(members.get(index).getMemberId().equals(memberId)) {
+				currentMemberId = memberId;
 				return index;
 			}
 		}
@@ -289,5 +315,141 @@ public class MemberService {
 		
 		throw new CommonException("존재하지 않거나 잘못 입력된 번호입니다.");
 	}
+	
+	// 예산 내역 관련 메서드
+	
+	
+	// 수입 내역 관련 메서드
+	
+	
+	/**수입 내역 등록 메서드
+	 * @throws CommonException */
+	public boolean addIncome(String date, int revenue, String source) throws CommonException {
+				int index = exist(currentMemberId);
+				
+				if (index >= 0) {
+					incomeDates.add(date);
+					income.add(revenue);
+					sources.add(source);
+					
+					members.get(index).setIncomeDates(incomeDates);
+					members.get(index).setIncome(income);
+					members.get(index).setSources(sources);
+					
+					System.out.println("수입내역이 등록 되었습니다.");
+					return true;
+				} 
+				throw new CommonException("수입 내역이 존재하지 않습니다.");
+	}
+	
+	
+	/**수입 내역 등록 메서드
+	 * @throws CommonException */
+	public boolean addIncome(Member dto, String date, int revenue, String source) throws CommonException {
+				int index = exist(dto.getMemberId());
+				
+				if (index >= 0) {
+					incomeDates.add(date);
+					income.add(revenue);
+					sources.add(source);
+					
+					members.get(index).setIncomeDates(incomeDates);
+					members.get(index).setIncome(income);
+					members.get(index).setSources(sources);
+
+					return true;
+				} 
+				throw new CommonException("수입 내역이 존재하지 않습니다.");
+	}
+	
+
+	/**수입 내역 삭제 메서드*/
+	public void removeIncome(String date, int revenue, String source) {
+				incomeDates.remove(date);
+				income.remove(revenue);
+				sources.remove(source);
+				System.out.println("수입내역이 삭제 되었습니다.");
+	}
+	
+	//전체 조회
+	public void getIncome() {
+		int currentIndex = exist(currentMemberId);
+		
+		for(int index = 0; index <income.size() ; index++ ) {
+			System.out.println();
+			System.out.println(" 날짜 : " + members.get(currentIndex).getIncomeDates(index));
+			System.out.printf(" 수입 : %,d원%n", members.get(currentIndex).getIncome(index));
+			System.out.printf(" 출처 : "+members.get(currentIndex).getSources(index));
+			System.out.println();
+		}
+	}
+	
+	//상세조회 1. 기간별 조회
+	public int getDateIncome(String startDate, String finishDate) throws RecordNotFoundException {
+		int currentIndex = exist(currentMemberId);
+		int finishCount=0;
+		
+	
+		if(currentIndex >=0) {
+			
+			int startDateIndex = 0;
+			startDateIndex	= members.get(currentIndex).getIncomeDates(startDate) ;
+	
+			for(int index = startDateIndex; index < incomeDates.size(); index++ ) {
+				if(members.get(currentIndex).getIncomeDates(index).equals(finishDate)) {
+					finishCount++;
+				}
+			}
+			
+			int finishDateIndex = members.get(currentIndex).getIncomeDates(finishDate) ;
+			
+			for(int index = startDateIndex; index < finishDateIndex+finishCount; index++) {
+				sumDateIncome = sumDateIncome + (int)(members.get(currentIndex).getIncome(index)) ;
+				System.out.print("["+members.get(currentIndex).getIncomeDates(index)+"] 수입 :");
+				System.out.print(members.get(currentIndex).getIncome(index)+"원"
+						+ "");
+				System.out.println(", 출처 :"+members.get(currentIndex).getSources(index));
+			}
+			return sumDateIncome;
+		}
+		throw new RecordNotFoundException();
+		
+	}
+	
+	//메뉴에서 이용할 시작날짜 가져오는 메서드
+	public String getIncomeStartDates() {
+		
+		int index=0;
+		return incomeDates.get(index);
+	}
+	
+	//메뉴에서 이용할 끝날짜 가져오는 메서드
+		public String getIncomeFinishDates() {
+			
+			int index=incomeDates.size()-1;
+			return incomeDates.get(index);
+		}
+	
+	
+	//상세 조회 2. 항목별 조회 - 입력형태
+	public int getItemIncome(String source) throws RecordNotFoundException {
+		int currentIndex = exist(currentMemberId);
+		
+		if(currentIndex >=0) {
+			
+			for(int index = 0; index < sources.size(); index++) {
+				if(members.get(currentIndex).getSources(index).equals(source)) {
+					sumItemIncome = sumItemIncome + (int)(members.get(currentIndex).getIncome(index));
+				}
+			}
+			return sumItemIncome;
+		}
+		throw new RecordNotFoundException();
+	}
+
+	
+	
+	
+	
 	
 }

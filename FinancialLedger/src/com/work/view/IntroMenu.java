@@ -14,6 +14,7 @@ import com.work.exception.DuplicateException;
 import com.work.exception.RecordNotFoundException;
 import com.work.model.dto.Member;
 import com.work.model.service.MemberService;
+import com.work.util.Utility;
 
 /**
  * <pre>
@@ -27,6 +28,11 @@ import com.work.model.service.MemberService;
  * 5. 프로그램 종료
  * 
  * <2> 메인 화면
+ * 1.수입
+ * 2.지출
+ * 3.예산
+ * 4.내정보
+ * 5.로그아웃 
  * 
  * <3> 수입 내역 관리 화면
  * 
@@ -40,7 +46,10 @@ import com.work.model.service.MemberService;
  */
 public class IntroMenu {
 
+	Utility util = new Utility();
+	
 	MemberService service = new MemberService();
+
 	
 	Scanner scanner = new Scanner(System.in);
 	
@@ -135,7 +144,7 @@ public class IntroMenu {
 			System.out.println("[실패] 입력된 정보가 잘못되었거나 존재하지 않습니다.");
 			introMenu();
 		}
-		
+		scanner.close();
 	}
 	
 	/**
@@ -170,7 +179,7 @@ public class IntroMenu {
 			System.out.println("[회원가입 실패] 이미 등록된 아이디이거나 회원입니다.");
 			introMenu();
 		}	
-		
+		scanner.close();
 	}
 	
 	
@@ -209,6 +218,7 @@ public class IntroMenu {
 			System.out.println("[입력 형식 오류] : 메뉴 번호는 숫자만 입력하기 바랍니다.");
 			introMenu();
 		}
+		scanner.close();
 		
 	}
 	
@@ -232,6 +242,7 @@ public class IntroMenu {
 		} catch (CommonException e) {
 			System.out.println("존재하지 않거나 잘못 입력된 번호입니다.");
 		}
+		scanner.close();
 	}
 	/**
 	 * <pre>
@@ -251,6 +262,7 @@ public class IntroMenu {
 		} catch (CommonException e) {
 			System.out.println("존재하지 않거나 잘못 입력된 번호입니다.");
 		}
+		scanner.close();
 	}
 	
 	/**
@@ -279,7 +291,7 @@ public class IntroMenu {
 		} catch (CommonException e) {
 			System.out.println("존재하지 않거나 잘못 입력된 번호입니다.");
 		}
-		
+		scanner.close();
 	}
 	
 	/**
@@ -332,7 +344,45 @@ public class IntroMenu {
 			myInfoMenu();
 			break;	
 		case 5 : 
-			logoutMenu();
+			introMenu();
+			break;			
+		default : 
+			System.out.println("메뉴번호 오류");
+			introMenu();
+			break;
+		}
+		scanner.close();
+	}
+	
+	/**
+	 * <pre>
+	 * <2>메인 화면
+	 * 1. 수입내역 관리 메인화면
+	 */
+	public void incomeMainMenu() {
+		printTitle("수입 내역 관리 화면");
+		
+		printMenuItem("1.수입 내역 등록");
+		printMenuItem("2.수입 내역 조회");
+		printMenuItem("3.수입 내역 삭제");
+		printMenuItem("0.이전 화면으로 가기");
+		printLine();
+		
+		System.out.print(">>  메뉴번호 입력 :");
+		int menuNo = scanner.nextInt();
+		
+		switch(menuNo) {
+		case 1 : 
+			registerIncomeMenu();
+			break;
+		case 2 : 
+			getIncomeMainMenu();
+			break;
+		case 3 : 
+			removeIncomeMenu();
+			break;
+		case 0 : 
+			mainMenu();
 			break;		
 		default : 
 			System.out.println("메뉴번호 오류");
@@ -341,16 +391,244 @@ public class IntroMenu {
 		scanner.close();
 	}
 	
-
 	/**
-	 * <pre>
-	 * <2>메인 화면
-	 * 1. 수입내역 관리 메인화면
+	 * 수입 등록 화면
 	 */
-	private void incomeMainMenu() {
-		printTitle("수입");
+	public void registerIncomeMenu() {
+		printTitle("수입 내역 등록");
+		System.out.println("<"+util.getCurrentDate()+">");
+		print("\n▶ 내 수입 : ");
+		int revenue = scanner.nextInt();
+		
+		System.out.println();
+		System.out.println("\n>> 출처 - 1.월급 2.용돈 3.배당금 4.기타 ");
+		System.out.println("출처는 \"문자\"로 입력해주시길 바랍니다.");
+		print("\n▶ 출처 : ");
+		String source = scanner.next();
+		
+		try {
+			service.addIncome(util.getCurrentDate(), revenue, source);
+		} catch (CommonException | IndexOutOfBoundsException e) {
+			// TODO Auto-generated catch block
+			System.out.println("수입 내역이 존재하지 않습니다.");
+		}
+		
+		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
+		int no = scanner.nextInt();
+		
+		if(no == 0)
+		{
+			incomeMainMenu();
+		}
+			scanner.close();
+			System.exit(0);
 		
 	}
+		
+	
+	
+	/**
+	 * 수입 삭제 화면
+	 */
+	public void removeIncomeMenu() {
+		printTitle("수입 내역 삭제");
+		System.out.println("<"+util.getCurrentDate()+">");
+		System.out.println("\n>> 삭제할 수입은 숫자만 입력하세요.");
+		print("\n▶ 삭제할 수입 : ");
+		int revenue = scanner.nextInt();
+		
+		
+		System.out.println();
+		System.out.println("\n>> 출처 - 1.월급 2.용돈 3.배당금 4.기타 ");
+		System.out.println("출처는 \"문자\"로 입력해주시길 바랍니다.");
+		print("\n▶ 삭제할 출처 : ");
+		String source = scanner.next();
+		
+		System.out.println();
+		System.out.println("\n>>날짜는 yyyy-MM-dd 형식 지켜주시길 바랍니다.");
+		print("\n▶ 삭제할 날짜 : ");
+		String date = scanner.next();
+		
+		service.removeIncome(date, revenue, source);
+		
+		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
+		int no = scanner.nextInt();
+		
+		if(no == 0)
+		{
+			incomeMainMenu();
+		}
+			scanner.close();
+			System.exit(0);
+	}
+	
+
+	
+	/**
+	 * <pre>
+	 * 수입 조회 화면
+	 * 1. 수입 전체 조회 화면
+	 * 2. 수입 상세 조회 화면  
+	 * </pre>
+	 */
+	public void getIncomeMainMenu() {
+			printTitle("수입 조회 관리 화면");
+			
+			printMenuItem("1. 수입 전체 조회 화면");
+			printMenuItem("2. 수입 상세 조회 화면");
+			printMenuItem("0. 이전 화면");
+			printLine();
+			
+			System.out.print(">>  메뉴번호 입력 :");
+			int menuNo = scanner.nextInt();
+			
+			switch(menuNo) {
+			case 1 : 
+				getAllIncomeMenu();
+				break;
+			case 2 : 
+				getDetailIncomeMenu();
+				break;
+			case 0 : 
+				incomeMainMenu();
+				break;
+			default : 
+				System.out.println("메뉴번호 오류");
+				break;
+			}
+			scanner.close();
+	}
+	
+	/**
+	 * <pre>
+	 * 수입 조회 화면
+	 * 1. 수입 전체 조회 화면
+	 * </pre>
+	 */
+	public void getAllIncomeMenu() {
+		printTitle("수입 전체 조회 화면");
+		service.getIncome();
+		
+		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
+		int no = scanner.nextInt();
+		
+		if(no == 0)
+		{
+			incomeMainMenu();
+		}
+			scanner.close();
+			System.exit(0);
+	}
+	
+	
+	
+	/**
+	 * <pre>
+	 * 수입 상세 조회 화면
+	 * 2. 수입 상세 조회 화면 
+	 * </pre> 
+	 */
+	public void getDetailIncomeMenu() {
+		printTitle("수입 상세 조회 관리 화면");
+		
+		printMenuItem("1. 수입출처별 상세 조회 화면");
+		printMenuItem("2. 기간별 상세 조회 화면");
+		printMenuItem("0. 이전 화면");
+		printLine();
+		
+		System.out.print(">>  메뉴번호 입력 :");
+		int menuNo = scanner.nextInt();
+		
+		switch(menuNo) {
+		case 1 : 
+			getItemDetailIncomeMenu();
+			break;
+		case 2 : 
+			getPeiodDetailIncomeMenu();
+			break;
+		case 0 : 
+			getIncomeMainMenu();
+			break;
+		default : 
+			System.out.println("메뉴번호 오류");
+			break;
+		}
+		scanner.close();
+		
+	}
+	
+	/**
+	 * <pre>
+	 * 수입 상세 조회 화면
+	 * 2. 수입 상세 조회 화면 
+	 * 		(1) 수입출처별 항목 전체 화면
+	 * </pre> 
+	 */
+	public void getItemDetailIncomeMenu() {
+		printTitle("수입출처별 수입 상세 조회");
+		
+		System.out.println("\n>> 출처 - 1.월급 2.용돈 3.배당금 4.기타 ");
+		System.out.println("출처는 \"문자\"로 입력해주시길 바랍니다.");
+		print("\n▶ 조회할 출처 : ");
+		String source = scanner.next();
+		try {
+			int sumIncome = service.getItemIncome(source);
+			System.out.println("[수입 출처]"+source+" 총 수입 :" +sumIncome);
+		} catch (RecordNotFoundException e) {
+			System.out.println("현재 등록된 수입이 없습니다.");
+		}
+		
+		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
+		int no = scanner.nextInt();
+		
+		if(no == 0)
+		{
+			incomeMainMenu();
+		}
+			scanner.close();
+			System.exit(0);
+	}
+	
+	/**
+	 * <pre>
+	 * 수입 조회 화면
+	 * 2. 수입 상세 조회 화면 
+	 * 		(2) 기간별 조회 전체 화면
+	 * </pre> 
+	 */
+	public void getPeiodDetailIncomeMenu() {
+		printTitle("기간별 조회 전체 화면");
+		
+		print("\n▶ 현재 등록된 기간 ["+service.getIncomeStartDates()+" ~ "+service.getIncomeFinishDates()+"]");
+		
+		System.out.println("\n\n>>날짜는 현재 등록된 기간 내에서만 쓰시길 바랍니다.");
+		System.out.println(">>날짜는 yyyy-MM-dd 형식 지켜주시길 바랍니다.");
+		print("\n▶ 시작 기간 : ");
+		String startDate = scanner.next();
+		
+		print("\n▶ 끝 기간 : ");
+		String finishDate = scanner.next();
+		
+		System.out.println("\n \t <<조회>>");
+		
+		try {
+			int totalPeriodMoney = service.getDateIncome(startDate, finishDate);
+			System.out.println("\n["+startDate+" ~ "+finishDate+"]"+"총 수입 :"+totalPeriodMoney);
+		} catch (RecordNotFoundException | NumberFormatException | ArrayIndexOutOfBoundsException e) {
+			System.out.println("[오류] 현재 등록된 수입이 없거나 기간을 잘못 입력하였습니다.");
+		}
+		
+		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
+		int no = scanner.nextInt();
+		
+		if(no == 0)
+		{
+			getDetailIncomeMenu();
+		}
+			scanner.close();
+			System.exit(0);
+	}
+	
 	
 	/**
 	 * <pre>
@@ -358,7 +636,35 @@ public class IntroMenu {
 	 * 2. 지출내역 관리 메인화면
 	 */
 	private void spendMainMenu() {
+		printTitle("지출 내역 관리 화면");
 		
+		printMenuItem("1.지출 내역 등록");
+		printMenuItem("2.지출 내역 조회");
+		printMenuItem("3.지출 내역 삭제");
+		printMenuItem("4.지출 내역 변경");
+		printLine();
+		
+		System.out.print(">>  메뉴번호 입력 :");
+		int menuNo = scanner.nextInt();
+		
+		switch(menuNo) {
+		case 1 : 
+//			incomeMainMenu();
+			break;
+		case 2 : 
+			spendMainMenu();
+			break;
+		case 3 : 
+			budgetMainMenu();
+			break;
+		case 4 : 
+			myInfoMenu();
+			break;	
+		default : 
+			System.out.println("메뉴번호 오류");
+			break;
+		}
+		scanner.close();
 	}
 	
 	/**
@@ -367,9 +673,58 @@ public class IntroMenu {
 	 * 3. 예산내역 관리 메인화면
 	 */
 	private void budgetMainMenu() {
+		printTitle("예산 내역 관리 화면");
+		
+		printMenuItem("1.예산 내역 등록");
+		printMenuItem("2.예산 내역 조회");
+		printMenuItem("3.예산 내역 삭제");
+		printMenuItem("4.예산 내역 변경");
+		printLine();
+		
+		System.out.print(">>  메뉴번호 입력 :");
+		int menuNo = scanner.nextInt();
+		
+		switch(menuNo) {
+		case 1 : 
+			addBudgetMenu();
+			break;
+		case 2 : 
+			getBudgetMenu();
+			break;
+		case 3 : 
+			removeBudgetMenu();
+			break;
+		case 4 : 
+			setBudgetMenu();
+			break;	
+		default : 
+			System.out.println("메뉴번호 오류");
+			break;
+		}
+		scanner.close();
 		
 	}
 	
+	private void addBudgetMenu() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	private void getBudgetMenu() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	private void removeBudgetMenu() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	private void setBudgetMenu() {
+		// TODO Auto-generated method stub
+		
+	}
+
 	/**
 	 * <pre>
 	 * <2>메인 화면
@@ -399,7 +754,7 @@ public class IntroMenu {
 				break;
 				
 		}
-		
+		scanner.close();
 	}
 	
 	/**
@@ -427,8 +782,8 @@ public class IntroMenu {
 		} catch (RecordNotFoundException e) {
 			System.out.println("[오류] 존재하지 않는 회원입니다.");
 		}
-		
-		}
+		scanner.close();
+	}
 	
 	/**
 	 * <pre>
@@ -469,6 +824,7 @@ public class IntroMenu {
 		} catch (RecordNotFoundException e) {
 			System.out.println("[오류] 존재하지 않는 아이디 혹은 비밀번호입니다.");
 		}
+		scanner.close();
 	}
 	
 	/**
@@ -510,7 +866,7 @@ public class IntroMenu {
 	 * @param item 메뉴 항목
 	 */
 	public void printMenuItem(String item) {
-		System.out.println("|"+"\t"+item+"\t"+"      |");
+		System.out.println(""+"\t"+item+"\t"+"      ");
 	}
 	
 	/**
