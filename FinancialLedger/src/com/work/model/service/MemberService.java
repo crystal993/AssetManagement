@@ -32,14 +32,7 @@ public class MemberService {
 	
 	/***/
 	public String currentMemberId = null;
-	
-	
-	int sumItemIncome = 0;
-	int sumDateIncome = 0;
-	
-	int sumDateSpend = 0;
-	int sumTypeSpend = 0;
-	int sumMethodSpend = 0;
+
 	
 	/** 기본 생성자 */
 	public MemberService() {
@@ -56,7 +49,7 @@ public class MemberService {
 		Member dto4 = new Member("user04", "password04", "김유신", "01012344000", "user04@work.com");
 		Member dto5 = new Member("user05", "password05", "유관순", "01012345000", "user05@work.com");
 		
-		
+		//회원 등록
 		addMember(dto1);
 		addMember(dto2);
 		addMember(dto3);
@@ -68,15 +61,24 @@ public class MemberService {
 		
 		addIncome(dto1,"2021-06-04",5000,"배당금");
 		addIncome(dto1,"2021-06-04",5000,"용돈");
+		addIncome(dto1,"2021-06-04",5000,"기타");
+		addIncome(dto1,"2021-06-05",3000,"기타");
 		addIncome(dto1,"2021-06-05",2000,"용돈");
+		addIncome(dto1,"2021-06-05",20000,"월급");
 		addIncome(dto1,"2021-06-06",8000,"용돈");
 		addIncome(dto1,"2021-06-07",3000,"배당금");
 		addIncome(dto1,"2021-06-07",3000,"용돈");
+		addIncome(dto1,"2021-06-08",3000,"기타");
 		
 		addSpend(dto1,"2021-06-04",6000,"식비","카드");
+		addSpend(dto1,"2021-06-04",10000,"식비","카드");
+		addSpend(dto1,"2021-06-05",30000,"문화비","현금");
 		addSpend(dto1,"2021-06-05",3000,"문화비","현금");
 		addSpend(dto1,"2021-06-06",2000,"교통비","카드");
-		addSpend(dto1,"2021-06-07",1000,"주거비","기타");
+		addSpend(dto1,"2021-06-06",2000,"기타","카드");
+		addSpend(dto1,"2021-06-07",10000,"주거비","기타");
+		addSpend(dto1,"2021-06-07",30000,"의류비","기타");
+		addSpend(dto1,"2021-06-08",2000,"교통비","기타");
 		
 		//dto2 수입 테스트 용
 		addBudget(dto2,50000);
@@ -337,9 +339,14 @@ public class MemberService {
 	
 	// 수입 내역 관련 메서드
 	
-	
-	/**수입 내역 등록 메서드
-	 * @throws CommonException */
+	/**
+	 * 수입 내역 등록 메서드
+	 * @param date 날짜
+	 * @param revenue 수입
+	 * @param source 수입 출처
+	 * @return 회원 존재하면 날짜, 수입, 수입출처 등록되면 true, 아니면 false
+	 * @throws CommonException
+	 */
 	public boolean addIncome(String date, int revenue, String source) throws CommonException {
 				int currentIndex = exist(currentMemberId);
 				int currentBudget = members.get(currentIndex).getBudget();
@@ -361,8 +368,16 @@ public class MemberService {
 	}
 	
 	
-	/**수입 내역 등록 메서드 - 초기화용
-	 * @throws CommonException */
+
+	/**
+	 * 수입 내역 등록 메서드 - 초기화용
+	 * @param dto
+	 * @param date
+	 * @param revenue
+	 * @param source
+	 * @return
+	 * @throws CommonException
+	 */
 	public boolean addIncome(Member dto, String date, int revenue, String source) throws CommonException {
 				int index = exist(dto.getMemberId());
 				int currentBudget = members.get(index).getBudget();
@@ -434,6 +449,7 @@ public class MemberService {
 	public void getDateIncome(String startDate, String finishDate) throws RecordNotFoundException {
 		int currentIndex = exist(currentMemberId);
 		int finishCount=0;
+		int sumDateIncome = 0;
 		
 			if(currentIndex >=0) {
 				if(members.get(currentIndex).getBudget() != 0) {
@@ -494,10 +510,12 @@ public class MemberService {
 	//상세 조회 2. 항목별 조회 - 입력형태
 	public int getItemIncome(String source) throws RecordNotFoundException {
 		int currentIndex = exist(currentMemberId);
+		int incomeSize = members.get(currentIndex).getIncomeSize();
+		int sumItemIncome = 0;
 		
 		if(currentIndex >=0) {
 			
-			for(int index = 0; index < members.get(currentIndex).getIncomeSize(); index++) {
+			for(int index = 0; index < incomeSize ; index++) {
 				if(members.get(currentIndex).getSources(index).equals(source)) {
 					
 					sumItemIncome = sumItemIncome + (int)(members.get(currentIndex).getIncome(index));
@@ -511,6 +529,85 @@ public class MemberService {
 		throw new RecordNotFoundException();
 	}
 
+	// 상세 항목별 전체 비율 조회 - 출처 1. 용돈 2. 월급 3. 배당금 4.기타 
+	public void getItemIncomePortion() {
+		int currentIndex = exist(currentMemberId);
+		int incomeSize = members.get(currentIndex).getIncomeSize();
+		
+		// 돈 넣을 변수
+		int pinMoney = 0;
+		int salary = 0;
+		int dividend = 0;
+		int etc = 0;
+		int sumIncome = 0;
+		
+		int width =20;
+		
+		// 각자의 금액을 담는다. 
+		for(int index = 0; index < incomeSize; index++) {
+			 
+			if (members.get(currentIndex).getSources(index).equals("용돈")) {
+					pinMoney += members.get(currentIndex).getIncome(index);
+			}
+			else if (members.get(currentIndex).getSources(index).equals("월급"))	{
+					salary += members.get(currentIndex).getIncome(index);
+			}
+			else if (members.get(currentIndex).getSources(index).equals("배당금")) {
+				dividend += members.get(currentIndex).getIncome(index);
+			}
+			else if (members.get(currentIndex).getSources(index).equals("기타"))
+			{
+					  etc += members.get(currentIndex).getIncome(index);
+			}else {
+				
+			}	
+			sumIncome += members.get(currentIndex).getIncome(index);
+		}
+		
+		//비율 계산
+		double pinMoneyPortion = (double)pinMoney/(double)sumIncome*100;
+		double salaryPortion = (double)salary/(double)sumIncome*100;
+		double dividendPortion = (double)dividend/(double)sumIncome*100;
+		double etcPortion = (double)etc/(double)sumIncome*100;
+		
+		System.out.print(">> [총 수입] :"+sumIncome+"원\n");
+		
+		System.out.print("[용돈] ");
+		//용돈 비율만큼 ■ 프린트 
+		for (int i = 0; i < pinMoneyPortion*width/100 ; i++ ) {
+			System.out.print("■");
+		}
+		System.out.print(" "+(int)pinMoneyPortion+"%");
+		System.out.println("    "+pinMoney+"원");
+		
+		
+		System.out.print("[월급] ");
+		//월급 비율만큼 ■ 프린트 
+		for (int i = 0; i < salaryPortion*width/100 ; i++ ) {
+			System.out.print("□");
+		}
+		System.out.print(" " + (int)salaryPortion + "%");
+		System.out.println("    " + salary+"원");
+		
+		
+		System.out.print("[배당금] ");
+		//배당금 비율만큼 ■ 프린트 
+		for (int i = 0; i < dividendPortion*width/100 ; i++ ) {
+			System.out.print("■");
+		}
+		System.out.print(" " + (int)dividendPortion + "%");
+		System.out.println("    " + dividend + "원");
+		
+		System.out.print("[기타] ");
+		//기타 비율만큼 ■ 프린트 
+		for (int i = 0; i < etcPortion*width/100 ; i++ ) {
+			System.out.print("□");
+		}
+		System.out.print(" "+(int)etcPortion+"%");
+		System.out.println("    " + etc + "원");
+	}
+	
+	
 	
 	//예산 내역 관리 메서드들
 	
@@ -563,6 +660,12 @@ public class MemberService {
 						members.get(currentIndex).clearIncomeDates();
 						members.get(currentIndex).clearIncome();
 						members.get(currentIndex).clearSources();
+						
+						// 지출 삭제
+						members.get(currentIndex).clearSpendDates();
+						members.get(currentIndex).clearSpend();
+						members.get(currentIndex).clearSpendType();
+						members.get(currentIndex).clearSpendMethod();
 						
 						System.out.println(">> 예산이 삭제되었습니다.");
 						return true;
@@ -655,7 +758,7 @@ public class MemberService {
 		//지출 항목 상세 조회 메서드
 		public int getTypeSpend(String spendType) throws RecordNotFoundException {
 				int currentIndex = exist(currentMemberId);
-				
+				int sumTypeSpend = 0;
 				
 				if(currentIndex >=0) {
 					
@@ -693,6 +796,7 @@ public class MemberService {
 		public void getDateSpend(String startDate, String finishDate) throws RecordNotFoundException {
 			int currentIndex = exist(currentMemberId);
 			int finishCount=0;
+			int sumDateSpend = 0;
 			
 				if(currentIndex >=0) {
 					if(members.get(currentIndex).getBudget() != 0) {
@@ -733,9 +837,10 @@ public class MemberService {
 				}
 		}
 
+		//지출 수단별 상세 조회 메서드
 		public int getMethodSpend(String spendMethod) throws RecordNotFoundException {
 			int currentIndex = exist(currentMemberId);
-			
+			int sumMethodSpend = 0;
 			
 			if(currentIndex >=0) {
 				
@@ -769,7 +874,115 @@ public class MemberService {
 				System.out.println("\n >> 지출내역이 삭제 되었습니다.");
 			
 		}
-		
+
+		//지출항목별 비율 - 지출 항목 - 1.식비 2.주거비 3.의류비 4.교통비 5.문화비 6.기타
+		public void getSpendTypePortion() {
+			int currentIndex = exist(currentMemberId);
+			int spendSize = members.get(currentIndex).getSpendSize();
+			
+			// 돈 넣을 변수
+			int foodExpenses = 0;
+			int houseExpenses = 0;
+			int clothingCost = 0;
+			int transportationFee = 0;
+			int culturalCost = 0;
+			int etc = 0;
+			
+			int sumSpend = 0;
+			
+			int width =20;
+			
+			// 각자의 금액을 담는다. 
+			for(int index = 0; index < spendSize; index++) {
+				 
+				if (members.get(currentIndex).getSpendType(index).equals("식비")) {
+					foodExpenses += members.get(currentIndex).getSpend(index);
+				}
+				else if (members.get(currentIndex).getSpendType(index).equals("주거비")) {
+					houseExpenses += members.get(currentIndex).getSpend(index);
+				}
+				else if (members.get(currentIndex).getSpendType(index).equals("의류비")) {
+					clothingCost += members.get(currentIndex).getSpend(index);
+				}
+				else if (members.get(currentIndex).getSpendType(index).equals("교통비")) {
+					transportationFee += members.get(currentIndex).getSpend(index);
+				}
+				else if (members.get(currentIndex).getSpendType(index).equals("문화비")) {
+					culturalCost += members.get(currentIndex).getSpend(index);
+				}
+				else if (members.get(currentIndex).getSpendType(index).equals("기타"))
+				{
+						  etc += members.get(currentIndex).getSpend(index);
+				}else {
+					
+				}	
+				sumSpend += members.get(currentIndex).getSpend(index);
+			}
+			
+			//비율 계산
+			double foodExpensesPortion = (double)foodExpenses/(double)sumSpend*100;
+			double houseExpensesPortion = (double)houseExpenses/(double)sumSpend*100;
+			double clothingCostPortion = (double)clothingCost/(double)sumSpend*100;
+			double transportationFeePortion = (double)transportationFee/(double)sumSpend*100;
+			double culturalCostPortion = (double)culturalCost/(double)sumSpend*100;
+			double etcPortion = (double)etc/(double)sumSpend*100;
+			
+			System.out.print(">> [총 지출] :"+sumSpend+"원\n");
+			
+			System.out.print("[식비] ");
+			//식비 비율만큼 ■ 프린트 
+			for (int i = 0; i < foodExpensesPortion*width/100 ; i++ ) {
+				System.out.print("■");
+			}
+			System.out.print(" "+(int)foodExpensesPortion+"%");
+			System.out.println("\t"+foodExpenses+"원");
+			
+			
+			System.out.print("[주거비] ");
+			//주거비 비율만큼 ■ 프린트 
+			for (int i = 0; i < houseExpensesPortion*width/100 ; i++ ) {
+				System.out.print("□");
+			}
+			System.out.print(" " + (int)houseExpensesPortion + "%");
+			System.out.println("\t" + houseExpenses+"원");
+			
+			
+			System.out.print("[의류비] ");
+			//의류비 비율만큼 ■ 프린트 
+			for (int i = 0; i < clothingCostPortion*width/100 ; i++ ) {
+				System.out.print("■");
+			}
+			System.out.print(" " + (int)clothingCostPortion + "%");
+			System.out.println("\t" + clothingCost + "원");
+			
+			System.out.print("[교통비] ");
+			//교통비 비율만큼 ■ 프린트 
+			for (int i = 0; i < transportationFeePortion*width/100 ; i++ ) {
+				System.out.print("□");
+			}
+			System.out.print(" " + (int)transportationFeePortion + "%");
+			System.out.println("\t" + transportationFee + "원");
+			
+			System.out.print("[문화비] ");
+			//문화비 비율만큼 ■ 프린트 
+			for (int i = 0; i < culturalCostPortion*width/100 ; i++ ) {
+				System.out.print("■");
+			}
+			System.out.print(" " + (int)culturalCostPortion + "%");
+			System.out.println("\t" + culturalCost + "원");
+			
+			
+			System.out.print("[기타] ");
+			//기타 비율만큼 ■ 프린트 
+			for (int i = 0; i < transportationFeePortion*width/100 ; i++ ) {
+				System.out.print("□");
+			}
+			System.out.print(" "+(int)etcPortion+"%");
+			System.out.println("\t" + etc + "원");
+			
+		}
+
+	
 
 	
 	

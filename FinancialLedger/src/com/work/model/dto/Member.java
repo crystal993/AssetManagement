@@ -671,6 +671,25 @@ public class Member {
 		this.spendMethod.remove(removeIndex);
 	}
 
+	public void clearSpendDates() {
+		spendDates.clear();
+		
+	}
+
+	public void clearSpend() {
+		spend.clear();
+		
+	}
+
+	public void clearSpendType() {
+		spendType.clear();
+		
+	}
+
+	public void clearSpendMethod() {
+		spendMethod.clear();		
+	}
+
 
 
 	

@@ -532,7 +532,8 @@ public class IntroMenu {
 		printTitle("수입 상세 조회 관리 화면");
 		
 		printMenuItem("1. 수입출처별 상세 조회 화면");
-		printMenuItem("2. 기간별 상세 조회 화면");
+		printMenuItem("2. 수입출처별 전체 비율 조회 화면");
+		printMenuItem("3. 기간별 상세 조회 화면");
 		printMenuItem("0. 이전 화면");
 		printLine();
 		
@@ -544,6 +545,9 @@ public class IntroMenu {
 			getItemDetailIncomeMenu();
 			break;
 		case 2 : 
+			getItemIncomePortionMenu();
+			break;	
+		case 3 : 
 			getPeiodDetailIncomeMenu();
 			break;
 		case 0 : 
@@ -557,6 +561,8 @@ public class IntroMenu {
 		
 	}
 	
+
+
 	/**
 	 * <pre>
 	 * 수입 상세 조회 화면
@@ -592,6 +598,28 @@ public class IntroMenu {
 		if(no == 0)
 		{
 			incomeMainMenu();
+		}
+			scanner.close();
+			System.exit(0);
+	}
+	
+	/**
+	 * <pre>
+	 * 수입 상세 조회 화면
+	 * 2. 수입 상세 조회 화면 
+	 * 		(1) 수입출처별 전체 비율 화면
+	 * </pre> 
+	 */
+	private void getItemIncomePortionMenu() {
+		printTitle("수입출처별 전체 비율 조회");
+		service.getItemIncomePortion();
+		
+		System.out.println("\n>> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
+		int no = scanner.nextInt();
+		
+		if(no == 0)
+		{
+			getDetailIncomeMenu();
 		}
 			scanner.close();
 			System.exit(0);
@@ -796,8 +824,10 @@ public class IntroMenu {
 		printTitle("지출 상세 조회 관리 화면");
 		
 		printMenuItem("1. 지출항목별 상세조회 화면");
-		printMenuItem("2. 기간별 상세조회 화면");
-		printMenuItem("3. 결제수단별 상세조회 화면");
+		printMenuItem("2. 지출항목별 전체 비율 화면");
+		printMenuItem("3. 기간별 상세조회 화면");
+		printMenuItem("4. 결제수단별 상세조회 화면");
+		
 		printMenuItem("0. 이전 화면");
 		printLine();
 		
@@ -809,11 +839,14 @@ public class IntroMenu {
 			getTypeDetailSpendMenu();
 			break;
 		case 2 : 
-			getPeiodDetailSpendMenu();
+			 getSpendTypePortionMenu();
 			break;
 		case 3 : 
+			getPeiodDetailSpendMenu();
+			break;
+		case 4 : 
 			getMethodDetailSpendMenu();
-			break;	
+			break;
 		case 0 : 
 			getSpendMainMenu();
 			break;
@@ -945,6 +978,28 @@ public class IntroMenu {
 			scanner.close();
 			System.exit(0);
 		
+	}
+	
+	/**
+	 * <pre>
+	 * 지출 상세 조회 화면
+	 * 2. 지출 상세 조회 화면 
+	 * 		(4) 지출항목별 전체 비율 화면
+	 * </pre> 
+	 */
+	private void getSpendTypePortionMenu() {
+		printTitle("지출항목별 전체 비율 조회");
+		service.getSpendTypePortion();
+		
+		System.out.println("\n>> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
+		int no = scanner.nextInt();
+		
+		if(no == 0)
+		{
+			getDetailSpendMenu();
+		}
+			scanner.close();
+			System.exit(0);
 	}
 	
 	/**
