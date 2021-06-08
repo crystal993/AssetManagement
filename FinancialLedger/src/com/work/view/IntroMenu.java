@@ -569,16 +569,24 @@ public class IntroMenu {
 		
 		System.out.println("\n>> 출처 - 1.월급 2.용돈 3.배당금 4.기타 ");
 		System.out.println("출처는 \"문자\"로 입력해주시길 바랍니다.");
+		
 		print("\n▶ 조회할 출처 : ");
 		String source = scanner.next();
+		
+		//service.getItemIncome(source) 검사 위한 try
 		try {
 			int sumIncome = service.getItemIncome(source);
-			System.out.println("[수입 출처]"+source+" 총 수입 :" +sumIncome);
-		} catch (RecordNotFoundException e) {
+				if(sumIncome > 0) {
+					System.out.println("[수입 출처]"+source+" 총 수입 :" +sumIncome);
+				}
+				else {
+					System.out.println("현재 등록된 수입이 없습니다.");
+				}
+		} catch (RecordNotFoundException | IndexOutOfBoundsException e) {
 			System.out.println("현재 등록된 수입이 없습니다.");
 		}
 		
-		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
+		System.out.println("\n>> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
 		int no = scanner.nextInt();
 		
 		if(no == 0)
@@ -612,13 +620,16 @@ public class IntroMenu {
 		System.out.println("\n \t <<조회>>");
 		
 		try {
-			int totalPeriodMoney = service.getDateIncome(startDate, finishDate);
-			System.out.println("\n["+startDate+" ~ "+finishDate+"]"+"총 수입 :"+totalPeriodMoney);
-		} catch (RecordNotFoundException | NumberFormatException | ArrayIndexOutOfBoundsException e) {
+				service.getDateIncome(startDate, finishDate);
+			
+		} catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+			System.out.println();
+		}
+		catch (RecordNotFoundException e) {
 			System.out.println("[오류] 현재 등록된 수입이 없거나 기간을 잘못 입력하였습니다.");
 		}
 		
-		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
+		System.out.println("\n>> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
 		int no = scanner.nextInt();
 		
 		if(no == 0)
@@ -632,8 +643,11 @@ public class IntroMenu {
 	
 	/**
 	 * <pre>
-	 * <2>메인 화면
-	 * 2. 지출내역 관리 메인화면
+	 * <2>지출내역 관리 메인화면
+	 * 	1. 지출 내역 등록
+	 *  2. 지출 내역 조회
+	 *  3. 지출 내역 삭제
+	 *  </pre>
 	 */
 	private void spendMainMenu() {
 		printTitle("지출 내역 관리 화면");
@@ -641,7 +655,7 @@ public class IntroMenu {
 		printMenuItem("1.지출 내역 등록");
 		printMenuItem("2.지출 내역 조회");
 		printMenuItem("3.지출 내역 삭제");
-		printMenuItem("4.지출 내역 변경");
+		printMenuItem("0.이전 화면으로 가기");
 		printLine();
 		
 		System.out.print(">>  메뉴번호 입력 :");
@@ -649,16 +663,16 @@ public class IntroMenu {
 		
 		switch(menuNo) {
 		case 1 : 
-//			incomeMainMenu();
+			addSpendMenu();
 			break;
 		case 2 : 
-			spendMainMenu();
+			getSpendMainMenu();
 			break;
 		case 3 : 
-			budgetMainMenu();
+			removeSpendMenu();
 			break;
-		case 4 : 
-			myInfoMenu();
+		case 0 : 
+			mainMenu();
 			break;	
 		default : 
 			System.out.println("메뉴번호 오류");
@@ -669,16 +683,336 @@ public class IntroMenu {
 	
 	/**
 	 * <pre>
+	 * <2>지출내역 관리 메인화면
+	 * 1. 지출 내역 등록
+	 *  </pre>
+	 */
+	private void addSpendMenu() {
+		printTitle("지출 내역 등록");
+		System.out.println("<"+util.getCurrentDate()+">");
+		print("\n▶ 내 지출 : ");
+		int spend = scanner.nextInt();
+		
+		System.out.println();
+		System.out.println("\n>> 지출 항목 - 1.식비 2.주거비 3.의류비 4.교통비 5.문화비 6.기타 ");
+		System.out.println("지출 항목는 \"문자\"로 입력해주시길 바랍니다.");
+		print("\n▶ 지출 항목 : ");
+		String spendType = scanner.next();
+		
+		System.out.println();
+		System.out.println("\n>> 결제 수단 - 1.카드 2.현금 3.이체 ");
+		System.out.println("결제 수단은 \"문자\"로 입력해주시길 바랍니다.");
+		print("\n▶ 결제 수단 : ");
+		String spendMethod = scanner.next();
+		
+		try {
+			service.addSpend(util.getCurrentDate(), spend, spendType, spendMethod);
+		} catch (CommonException | IndexOutOfBoundsException e) {
+			// TODO Auto-generated catch block
+			System.out.println("지출 내역이 존재하지 않습니다.");
+		}
+		
+		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
+		int no = scanner.nextInt();
+		
+		if(no == 0)
+		{
+			spendMainMenu();
+		}
+			scanner.close();
+			System.exit(0);
+		
+		
+	}
+	
+	
+	
+	/**
+	 * <pre>
+	 * <2> 지출내역 관리 메인화면
+	 *  2. 지출 내역 조회
+	 *  </pre>
+	 */
+	private void getSpendMainMenu() {
+		printTitle("지출 조회 관리 화면");
+		
+		printMenuItem("1. 지출 전체 조회 화면");
+		printMenuItem("2. 지출 상세 조회 화면");
+		printMenuItem("0. 이전 화면");
+		printLine();
+		
+		System.out.print(">>  메뉴번호 입력 :");
+		int menuNo = scanner.nextInt();
+		
+		switch(menuNo) {
+		case 1 : 
+			getAllSpendMenu();
+			break;
+		case 2 : 
+			getDetailSpendMenu();
+			break;
+		case 0 : 
+			spendMainMenu();
+			break;
+		default : 
+			System.out.println("메뉴번호 오류");
+			break;
+		}
+		scanner.close();
+}
+
+	/**
+	 * <pre>
+	 * <2> 지출내역 관리 메인화면
+	 *  2. 지출 내역 조회
+	 * 2-1. 지출 전체 조회 화면
+	 * </pre>
+	 */
+	public void getAllSpendMenu() {
+	printTitle("지출 전체 조회 화면");
+	service.getSpend();
+	
+	System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
+	int no = scanner.nextInt();
+	
+	if(no == 0)
+	{
+		spendMainMenu();
+	}
+		scanner.close();
+		System.exit(0);
+}
+
+
+
+	/**
+	 * <pre>
+	 * <2> 지출내역 관리 메인화면
+	 *  2. 지출 내역 조회
+	 * 2-2. 지출 상세 조회 화면
+	 * </pre> 
+	 */
+	public void getDetailSpendMenu() {
+		printTitle("지출 상세 조회 관리 화면");
+		
+		printMenuItem("1. 지출항목별 상세조회 화면");
+		printMenuItem("2. 기간별 상세조회 화면");
+		printMenuItem("3. 결제수단별 상세조회 화면");
+		printMenuItem("0. 이전 화면");
+		printLine();
+		
+		System.out.print(">>  메뉴번호 입력 :");
+		int menuNo = scanner.nextInt();
+		
+		switch(menuNo) {
+		case 1 : 
+			getTypeDetailSpendMenu();
+			break;
+		case 2 : 
+			getPeiodDetailSpendMenu();
+			break;
+		case 3 : 
+			getMethodDetailSpendMenu();
+			break;	
+		case 0 : 
+			getSpendMainMenu();
+			break;
+		default : 
+			System.out.println("메뉴번호 오류");
+			break;
+		}
+		scanner.close();
+		
+	}
+	
+
+
+	/**
+	 * <pre>
+	 * <2> 지출내역 관리 메인화면
+	 *  2. 지출 내역 조회
+	 * 		2-2. 지출 상세 조회 화면
+	 *  		(1) 지출 항목별 상세 조회
+	 * </pre> 
+	 */
+	public void getTypeDetailSpendMenu() {
+		printTitle("지출 항목별 상세 조회");
+		
+		System.out.println("\n>> 지출 항목 - 1.식비 2.주거비 3.의류비 4.교통비 5.문화비 6.기타 ");
+		System.out.println("지출 항목는 \"문자\"로 입력해주시길 바랍니다.");
+		print("\n▶ 조회할 지출 항목 : ");
+		
+		String spendType = scanner.next();
+		
+		//service.getItemSpend(spendType) 검사 위한 try
+		try {
+			int sumSpend = service.getTypeSpend(spendType);
+				if(sumSpend > 0) {
+					System.out.println("[지출 항목]"+spendType+" 총 지출 :" +sumSpend);
+				}
+		} catch (RecordNotFoundException | IndexOutOfBoundsException e) {
+			System.out.println("현재 등록된 지출이 없습니다.");
+		}
+		
+		System.out.println("\n>> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
+		int no = scanner.nextInt();
+		
+		if(no == 0)
+		{
+			getDetailSpendMenu();
+		}
+			scanner.close();
+			System.exit(0);
+	}
+	
+	/**
+	 * <pre>
+	 * <2> 지출내역 관리 메인화면
+	 *  2. 지출 내역 조회
+	 * 		2-2. 지출 상세 조회 화면
+	 *  		(2) 기간별 조회
+	 * </pre> 
+	 */
+	public void getPeiodDetailSpendMenu() {
+		printTitle("기간별 조회 전체 화면");
+		
+		print("\n▶ 현재 등록된 기간 ["+service.getSpendStartDates()+" ~ "+service.getSpendFinishDates()+"]");
+		
+		System.out.println("\n\n>>날짜는 현재 등록된 기간 내에서만 쓰시길 바랍니다.");
+		System.out.println(">>날짜는 yyyy-MM-dd 형식 지켜주시길 바랍니다.");
+		print("\n▶ 시작 기간 : ");
+		String startDate = scanner.next();
+		
+		print("\n▶ 끝 기간 : ");
+		String finishDate = scanner.next();
+		
+		System.out.println("\n \t <<조회>>");
+		
+		try {
+				service.getDateSpend(startDate, finishDate);
+			
+		} catch ( NumberFormatException | ArrayIndexOutOfBoundsException e) {
+			System.out.println("");
+		} catch (RecordNotFoundException | IndexOutOfBoundsException e) {
+			System.out.println("[오류] 현재 등록된 지출이 없거나 기간을 잘못 입력하였습니다.");
+		}
+		
+		System.out.println("\n>> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
+		int no = scanner.nextInt();
+		
+		if(no == 0)
+		{
+			getDetailSpendMenu();
+		}
+			scanner.close();
+			System.exit(0);
+	}
+	
+	/**
+	 * <pre>
+	 * <2> 지출내역 관리 메인화면
+	 *  2. 지출 내역 조회
+	 * 		2-2. 지출 상세 조회 화면
+	 *  		(3) 지출 수단별 조회 상세 항목 메뉴
+	 * </pre> 
+	 */
+	private void getMethodDetailSpendMenu() {
+		printTitle("지출 수단별 상세 조회");
+		
+		System.out.println("\n>> 지출 수단 - 1.카드 2.현금 3.이체 4.기타");
+		System.out.println("지출 수단은 \"문자\"로 입력해주시길 바랍니다.");
+		print("\n▶ 조회할 지출 수단 : ");
+		
+		String spendMethod = scanner.next();
+		
+		//service.getItemSpend(spendType) 검사 위한 try
+		try {
+			int sumSpend = service.getMethodSpend(spendMethod);
+				if(sumSpend > 0) {
+					System.out.println("[지출 항목]"+spendMethod+" 총 지출 :" +sumSpend);
+				}
+		} catch (RecordNotFoundException | IndexOutOfBoundsException e) {
+			System.out.println("현재 등록된 지출이 없습니다.");
+		}
+		
+		System.out.println("\n>> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
+		int no = scanner.nextInt();
+		
+		if(no == 0)
+		{
+			getDetailSpendMenu();
+		}
+			scanner.close();
+			System.exit(0);
+		
+	}
+	
+	/**
+	 * <pre>
+	 * <2> 지출내역 관리 메인화면
+	 *  3. 지출 내역 삭제
+	 *  </pre>
+	 */
+	private void removeSpendMenu() {
+		printTitle("지출 내역 삭제");
+		System.out.println("<"+util.getCurrentDate()+">");
+		System.out.println("\n>> 삭제할 지출은 숫자만 입력하세요.");
+		print("\n▶ 삭제할 지출 : ");
+		int spend = scanner.nextInt();
+		
+		
+		System.out.println();
+		System.out.println("\n>> 지출 항목 - 1.식비 2.주거비 3.의류비 4.교통비 5.문화비 6.기타 ");
+		System.out.println("지출 항목은 \"문자\"로 입력해주시길 바랍니다.");
+		print("\n▶ 삭제할 지출 항목 : ");
+		String spendType = scanner.next();
+		
+		
+		System.out.println();
+		System.out.println("\n>> 지출 수단 - 1.카드 2.현금 3.이체 4.기타 ");
+		System.out.println("출처는 \"문자\"로 입력해주시길 바랍니다.");
+		print("\n▶ 삭제할 지출 수단 : ");
+		String spendMethod = scanner.next();
+		
+		
+		System.out.println();
+		System.out.println("\n>>날짜는 yyyy-MM-dd 형식 지켜주시길 바랍니다.");
+		print("\n▶ 삭제할 날짜 : ");
+		String date = scanner.next();
+		
+		service.removeSpend(date, spend, spendType, spendMethod);
+		
+		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
+		int no = scanner.nextInt();
+		
+		if(no == 0)
+		{
+			spendMainMenu();
+		}
+			scanner.close();
+			System.exit(0);
+		
+	}
+
+	
+
+	/**
+	 * <pre>
 	 * <2>메인 화면
 	 * 3. 예산내역 관리 메인화면
+	 * 	3-1.초기 예산 등록
+	 * 	3-2.현재 예산 조회
+	 *  3-3.전체 예산 삭제
+	 *  3-4.예산 내역 변경
+	 *  </pre>
 	 */
 	private void budgetMainMenu() {
 		printTitle("예산 내역 관리 화면");
 		
-		printMenuItem("1.예산 내역 등록");
-		printMenuItem("2.예산 내역 조회");
-		printMenuItem("3.예산 내역 삭제");
-		printMenuItem("4.예산 내역 변경");
+		printMenuItem("1.초기 예산 등록");
+		printMenuItem("2.현재 예산 조회");
+		printMenuItem("3.전체 예산 삭제");
+		printMenuItem("0.이전 화면으로 가기");
 		printLine();
 		
 		System.out.print(">>  메뉴번호 입력 :");
@@ -694,9 +1028,9 @@ public class IntroMenu {
 		case 3 : 
 			removeBudgetMenu();
 			break;
-		case 4 : 
-			setBudgetMenu();
-			break;	
+		case 0 : 
+			mainMenu();
+			break;		
 		default : 
 			System.out.println("메뉴번호 오류");
 			break;
@@ -705,25 +1039,110 @@ public class IntroMenu {
 		
 	}
 	
+	/**
+	 * <pre>
+	 * <2>메인 화면
+	 * 3. 예산내역 관리 메인화면
+	 * 	3-1.초기 예산 등록
+	 * </pre>
+	 */
 	private void addBudgetMenu() {
-		// TODO Auto-generated method stub
+		printTitle("1.초기 예산 등록");
 		
+		int budget = service.getBudget();
+		
+		if(budget == 0) {
+		
+			System.out.print("▶ 예산 입력 :");
+			budget = scanner.nextInt();
+			
+			try {
+				service.addBudget(budget);
+			} catch (DuplicateException e) {
+				System.out.println("");
+			}
+		}
+		else {
+			System.out.println(">> 예산 데이터가 이미 등록되어 있습니다. ");
+			System.out.println("▶ 내 예산 : "+budget+"원");
+			System.out.println(">> 이미 등록된 상태에서는 예산 조회, 변경, 삭제만 가능합니다.\n");
+		}
+		
+		
+		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
+		int no = scanner.nextInt();
+		
+		if(no == 0)
+		{
+			budgetMainMenu();
+		}
+			scanner.close();
+			System.exit(0);
 	}
 	
+	/**
+	 * <pre>
+	 * <2>메인 화면
+	 * 3. 예산내역 관리 메인화면
+	 * 	3-2.현재 예산 조회
+	 * </pre>
+	 */
 	private void getBudgetMenu() {
-		// TODO Auto-generated method stub
+		printTitle("2.현재 예산 조회");
+		
+		int budget = service.getBudget();
+		System.out.println("▶ 예산 :" + budget+"\n");
+		
+		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
+		int no = scanner.nextInt();
+		
+		if(no == 0)
+		{
+			budgetMainMenu();
+		}
+			scanner.close();
+			System.exit(0);
 		
 	}
 	
+	/**
+	 * <pre>
+	 * <2>메인 화면
+	 * 3. 예산내역 관리 메인화면
+	 * 	3-3.전체 예산 삭제
+	 * </pre>
+	 */
 	private void removeBudgetMenu() {
-		// TODO Auto-generated method stub
+		printTitle("3.전체 예산 삭제");
 		
+		System.out.println(">> [경고] 예산을 삭제하면 지출과 수입 등 모든 내역이 사라집니다.");
+		System.out.println(">> [경고] 그래도 삭제하겠습니까? 1. 네 2. 아니오");
+		print(">> 번호 입력 : ");
+		int removeNo = scanner.nextInt();
+		
+		if (removeNo == 1)
+		{
+			try {
+				service.removeBudget();
+			} catch (RecordNotFoundException e) {
+				System.out.println(">> 예산 데이터가 존재하지 않습니다.\n");
+			}
+			System.out.println("▶ 예산 :" + service.getBudget()+"\n");
+		} else {
+			System.out.println("");
+		}
+		
+		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
+		int no = scanner.nextInt();
+		
+		if(no == 0)
+		{
+			budgetMainMenu();
+		}
+			scanner.close();
+			System.exit(0);
 	}
 	
-	private void setBudgetMenu() {
-		// TODO Auto-generated method stub
-		
-	}
 
 	/**
 	 * <pre>
@@ -837,8 +1256,6 @@ public class IntroMenu {
 		System.out.println("\n[로그아웃] 로그아웃 되었습니다.");
 		System.exit(0);
 	}
-	
-	
 	
 	
 	

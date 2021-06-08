@@ -44,13 +44,108 @@ public class Member {
 	/**예산 : 필수*/
 // private int budget;
 	
+	//예산
+	/**예산 날짜 : 필수 */
 	ArrayList<String> incomeDates = new ArrayList<String>();
+	
+	/**예산 : 필수*/
 	ArrayList<Integer> income = new ArrayList<Integer>();
-	ArrayList<Integer> spend = new ArrayList<Integer>();
+	
+	/**예산 출처 : 필수*/
 	ArrayList<String> sources = new ArrayList<String>();
-	int balance = 0;
+	
+	
+	//지출
+	/**예산 날짜 : 필수 */
+	ArrayList<String> spendDates = new ArrayList<String>();
+	
+	/**지출 : 필수*/
+	ArrayList<Integer> spend = new ArrayList<Integer>();
+	
+	/**지출 항목 : 필수*/
+	ArrayList<String> spendType = new ArrayList<String>();
+
+	/**결제 수단 항목 : 필수*/
+	ArrayList<String> spendMethod = new ArrayList<String>();
+	
 	int totalInMoney = 0;
 	int totalOutMoney = 0;
+	
+	
+
+
+	/**
+	 * @return the spendDates
+	 */
+	public ArrayList<String> getSpendDates() {
+		return spendDates;
+	}
+	
+	public String getSpendDates(int index) {
+		return spendDates.get(index);
+	}
+	
+	public int getSpendDates(String date) {
+		for(int index = 0; index < spendDates.size() ; index++) {
+			if(spendDates.get(index).equals(date)) {
+				return index;
+			}
+		}
+		return -1;
+	}
+
+	/**
+	 * @param spendDates the spendDates to set
+	 */
+	public void setSpendDates(ArrayList<String> spendDates) {
+		this.spendDates = spendDates;
+	}
+
+
+	/**
+	 * @return the spendType
+	 */
+	public ArrayList<String> getSpendType() {
+		return spendType;
+	}
+
+	/**
+	 * @param spendType the spendType to set
+	 */
+	public void setSpendType(ArrayList<String> spendType) {
+		this.spendType = spendType;
+	}
+	
+	public void setSpendType(String spendType) {
+		this.spendType.add(spendType);
+	}
+
+
+	/**
+	 * @return the spendMethod
+	 */
+	public ArrayList<String> getSpendMethod() {
+		return spendMethod;
+	}
+
+
+	/**
+	 * @param spendMethod the spendMethod to set
+	 */
+	public void setSpendMethod(ArrayList<String> spendMethod) {
+		this.spendMethod = spendMethod;
+	}
+	
+	public void setSpendMethod(String spendMethod) {
+		this.spendMethod.add(spendMethod);
+	}
+
+	/**
+	 * @param incomeDates the incomeDates to set
+	 */
+	public void setIncomeDates(ArrayList<String> incomeDates) {
+		this.incomeDates = incomeDates;
+	}
 	
 	
 	
@@ -197,6 +292,7 @@ public class Member {
 	public int getBudget() {
 		return budget;
 	}
+	
 
 	/**
 	 * @param budget the budget to set
@@ -288,10 +384,10 @@ public class Member {
 
 
 	/**
-	 * @param incomeDates the incomeDates to set
+	 * @param string the incomeDates to set
 	 */
-	public void setIncomeDates(ArrayList<String> incomeDates) {
-		this.incomeDates = incomeDates;
+	public void setIncomeDates(String string) {
+		this.incomeDates.add(string);
 	}
 
 	
@@ -339,7 +435,10 @@ public class Member {
 	public void setSpend(ArrayList<Integer> spend) {
 		this.spend = spend;
 	}
-
+	
+	public void setSpend(int spend) {
+		this.spend.add(spend);
+	}
 
 	/**
 	 * @return the sources
@@ -355,56 +454,6 @@ public class Member {
 	public void setSources(ArrayList<String> sources) {
 		this.sources = sources;
 	}
-
-
-	/**
-	 * @return the balance
-	 */
-	public int getBalance() {
-		return balance;
-	}
-
-
-	/**
-	 * @param balance the balance to set
-	 */
-	public void setBalance(int balance) {
-		this.balance = balance;
-	}
-
-
-	/**
-	 * @return the totalInMoney
-	 */
-	public int getTotalInMoney() {
-		return totalInMoney;
-	}
-
-
-	/**
-	 * @param totalInMoney the totalInMoney to set
-	 */
-	public void setTotalInMoney(int totalInMoney) {
-		this.totalInMoney = totalInMoney;
-	}
-
-
-	/**
-	 * @return the totalOutMoney
-	 */
-	public int getTotalOutMoney() {
-		return totalOutMoney;
-	}
-
-
-	/**
-	 * @param totalOutMoney the totalOutMoney to set
-	 */
-	public void setTotalOutMoney(int totalOutMoney) {
-		this.totalOutMoney = totalOutMoney;
-	}
-
-
 
 
 	@Override
@@ -475,7 +524,7 @@ public class Member {
 	}
 	
 
-	public Object getIncome(int index) {
+	public int getIncome(int index) {
 		// TODO Auto-generated method stub
 		return income.get(index);
 	}
@@ -490,6 +539,136 @@ public class Member {
 	public void setSources(String string) {
 		// TODO Auto-generated method stub
 		this.sources.add(string);
+	}
+
+
+	// 삭제 메서드
+	public void removeIncomeDates(String date2) {
+		int removeIndex = 0;
+		for(int index = 0; index < incomeDates.size() ; index++) {
+			if(incomeDates.get(index).equals(date2)) {
+				removeIndex = index;
+			}
+		}
+		
+		this.incomeDates.remove(removeIndex);
+	}
+
+
+	public void removeSources(String sources2) {
+		int removeIndex = 0;
+		for(int index = 0; index < sources.size() ; index++) {
+			if(sources.get(index).equals(sources2)) {
+				removeIndex = index;
+			}
+		}
+		
+		this.sources.remove(removeIndex);
+		
+	}
+
+
+	public void removeIncome(int revenue) {
+		int removeIndex = 0;
+		for(int index = 0; index < income.size() ; index++) {
+			if(income.get(index) == revenue) {
+				removeIndex = index;
+			}
+		}
+		
+		this.income.remove(removeIndex);
+	}
+
+
+	public int getIncomeSize() {
+		
+		return this.income.size();
+	}
+
+
+	public void clearIncomeDates() {
+		// TODO Auto-generated method stub
+		incomeDates.clear();
+	}
+
+
+	public void clearIncome() {
+		// TODO Auto-generated method stub
+		income.clear();
+	}
+
+
+	public void clearSources() {
+		// TODO Auto-generated method stub
+		sources.clear();
+	}
+
+
+	public void setSpendDates(String currentDate) {
+		this.spendDates.add(currentDate);
+	}
+
+
+	public int getSpendSize() {
+		return this.spend.size();
+	}
+
+	public int getSpend(int index) {
+		return spend.get(index);
+	}
+
+	public String getSpendType(int index) {
+		return spendType.get(index);
+	}
+
+	public String getSpendMethod(int index) {
+		return spendMethod.get(index);
+	}
+
+	public void removeSpendDates(String date2) {
+		int removeIndex = 0;
+		for(int index = 0; index < spendDates.size() ; index++) {
+			if(spendDates.get(index).equals(date2)) {
+				removeIndex = index;
+			}
+		}
+		
+		this.spendDates.remove(removeIndex);
+		
+	}
+
+	public void removeSpendType(String spendType2) {
+		int removeIndex = 0;
+		for(int index = 0; index < spendType.size() ; index++) {
+			if(spendType.get(index).equals(spendType2)) {
+				removeIndex = index;
+			}
+		}
+		
+		this.spendType.remove(removeIndex);
+		
+	}
+
+	public void removeSpend(int spend2) {
+		int removeIndex = 0;
+		for(int index = 0; index < spend.size() ; index++) {
+			if(spend.get(index).equals(spend2)) {
+				removeIndex = index;
+			}
+		}
+		
+		this.spend.remove(removeIndex);
+	}
+
+	public void removeSpendMethod(String spendMethod2) {
+		int removeIndex = 0;
+		for(int index = 0; index < spendMethod.size() ; index++) {
+			if(spendMethod.get(index).equals(spendMethod2)) {
+				removeIndex = index;
+			}
+		}
+		
+		this.spendMethod.remove(removeIndex);
 	}
 
 
