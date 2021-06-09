@@ -14,7 +14,7 @@ import com.work.util.*;
 
 /**
  * <pre>
- * 회원 관리 서비스 클래스
+ * 회원과 가계부 관리 서비스 클래스
  * Collection API 활용 
  * -- ArrayList
  * -- Generic Collection 
@@ -30,7 +30,7 @@ public class MemberService {
 	/**회원들을 관리하기 위한 저장 구조 - ArrayList*/
 	private ArrayList<Member> members = new ArrayList<Member>();
 	
-	/***/
+	/**프로그램이 실행 될 동안 식별을 위해 쓰일 현재 멤버 아이디 변수*/
 	public String currentMemberId = null;
 
 	
@@ -56,7 +56,7 @@ public class MemberService {
 		addMember(dto4);
 		addMember(dto5);
 		
-		//dto1 예산 테스트 용, 지출 테스트용
+		//dto1 테스트 용
 		addBudget(dto1,500000);
 		
 		addIncome(dto1,"2021-06-04",5000,"배당금");
@@ -80,7 +80,7 @@ public class MemberService {
 		addSpend(dto1,"2021-06-07",30000,"의류비","기타");
 		addSpend(dto1,"2021-06-08",2000,"교통비","기타");
 		
-		//dto2 수입 테스트 용
+		//dto2 테스트 용
 		addBudget(dto2,500000);
 				
 		addIncome(dto2,"2021-06-04",5000,"배당금");
@@ -371,11 +371,11 @@ public class MemberService {
 
 	/**
 	 * 수입 내역 등록 메서드 - 초기화용
-	 * @param dto
-	 * @param date
-	 * @param revenue
-	 * @param source
-	 * @return
+	 * @param dto 객체
+	 * @param date 날짜 
+	 * @param revenue 수입
+	 * @param source 수입 출처 
+	 * @return 아이디가 존재하고, 수입이 등록되면 true 반환, 아니면 false 반환 
 	 * @throws CommonException
 	 */
 	public boolean addIncome(Member dto, String date, int revenue, String source) throws CommonException {
@@ -398,7 +398,12 @@ public class MemberService {
 	}
 	
 
-	/**수입 내역 삭제 메서드*/
+	/**
+	 * 수입 내역 삭제 메서드
+	 * @param date 날짜
+	 * @param revenue 수입
+	 * @param source 수입 출처
+	 */
 	public void removeIncome(String date, int revenue, String source) {
 				int currentIndex = exist(currentMemberId);
 				int currentBudget = members.get(currentIndex).getBudget();
@@ -414,7 +419,9 @@ public class MemberService {
 				System.out.println("\n >> 수입내역이 삭제 되었습니다.");
 	}
 	
-	//수입 전체 조회
+	/**
+	 * 수입 전체 조회 
+	 */
 	public void getIncome() {
 		int currentIndex = exist(currentMemberId);
 		
@@ -445,7 +452,12 @@ public class MemberService {
 		}
 	}
 	
-	//상세조회 1. 기간별 조회
+	/**
+	 * 상세조회 1. 기간별 조회
+	 * @param startDate
+	 * @param finishDate
+	 * @throws RecordNotFoundException
+	 */
 	public void getDateIncome(String startDate, String finishDate) throws RecordNotFoundException {
 		int currentIndex = exist(currentMemberId);
 		int finishCount=0;
@@ -490,15 +502,19 @@ public class MemberService {
 			}
 		}
 			
-	
-	
-	//메뉴에서 이용할 시작날짜 가져오는 메서드
+	/**
+	 * 수입 시작날짜 조회 메서드
+	 * @return 수입 시작날짜 
+	 */
 	public String getIncomeStartDates() {
 		int currentIndex = exist(currentMemberId);
 		return members.get(currentIndex).getIncomeDates(0);
 	}
 	
-	//메뉴에서 이용할 끝날짜 가져오는 메서드
+	/**
+	 * 수입 끝날짜 조회 메서드
+	 * @return 수입 끝날짜
+	 */
 		public String getIncomeFinishDates() {
 			int currentIndex = exist(currentMemberId);
 			int index=members.get(currentIndex).getIncomeSize()-1;
@@ -507,7 +523,12 @@ public class MemberService {
 		}
 	
 	
-	//상세 조회 2. 항목별 조회 - 입력형태
+	/**
+	 * 상세 조회 2. 수입출처별 조회 - 입력형태
+	 * @param source 수입 출처
+	 * @return 수입출처별 수입의 합계, sumItemIncome
+	 * @throws RecordNotFoundException
+	 */
 	public int getItemIncome(String source) throws RecordNotFoundException {
 		int currentIndex = exist(currentMemberId);
 		int incomeSize = members.get(currentIndex).getIncomeSize();
@@ -529,7 +550,9 @@ public class MemberService {
 		throw new RecordNotFoundException();
 	}
 
-	// 상세 항목별 전체 비율 조회 - 출처 1. 용돈 2. 월급 3. 배당금 4.기타 
+	/**
+	 * 상세 항목별 전체 비율 조회 - 출처 1. 용돈 2. 월급 3. 배당금 4.기타 
+	 */
 	public void getItemIncomePortion() {
 		int currentIndex = exist(currentMemberId);
 		int incomeSize = members.get(currentIndex).getIncomeSize();
@@ -582,7 +605,7 @@ public class MemberService {
 		
 		
 		System.out.print(" [월급] ");
-		//월급 비율만큼 ■ 프린트 
+		//월급 비율만큼 □ 프린트 
 		for (int i = 0; i < salaryPortion*width/100 ; i++ ) {
 			System.out.print("□");
 		}
@@ -599,7 +622,7 @@ public class MemberService {
 		System.out.println("    " + dividend + "원");
 		
 		System.out.print(" [기타] ");
-		//기타 비율만큼 ■ 프린트 
+		//기타 비율만큼 □ 프린트 
 		for (int i = 0; i < etcPortion*width/100 ; i++ ) {
 			System.out.print("□");
 		}
@@ -611,7 +634,12 @@ public class MemberService {
 	
 	//예산 내역 관리 메서드들
 	
-	//예산등록 메서드 - 사용자 입력
+	/**
+	 * 초기 예산 등록 메서드 - 사용자 입력
+	 * @param budget 예산
+	 * @return 현재 예산이 0원이고 현재 로그인된 아이디가 존재하면 true 반환, 아니면 false 반환
+	 * @throws DuplicateException
+	 */
 	public boolean addBudget(int budget) throws DuplicateException {
 		int currentIndex = exist(currentMemberId);
 		int currentBudget = members.get(currentIndex).getBudget();
@@ -626,7 +654,12 @@ public class MemberService {
 		throw new DuplicateException("예산 데이터가 이미 존재합니다.");
 	}
 
-	   //예산등록 메서드 테스트용 - 초기화
+		/**
+		 * 예산 등록 메서드 - 초기화용(테스트)
+		 * @param dto 객체
+		 * @param budget 예산
+		 * @return 현재 예산이 0원이고 현재 로그인된 아이디가 존재하면 true 반환, 아니면 false 반환
+		 */
 		public boolean addBudget(Member dto,int budget)  {
 			int currentIndex = exist(dto.getMemberId());
 			int currentBudget = members.get(currentIndex).getBudget();
@@ -640,14 +673,21 @@ public class MemberService {
 			return false;
 		}
 
-		//예산 내역 조회 메서드
+		/**
+		 * 현재 예산 조회 메서드
+		 * @return 예산 
+		 */
 		public int getBudget() {
 			int currentIndex = exist(currentMemberId);
 			
 			return members.get(currentIndex).getBudget();
 		}
 
-		//예산 내역 삭제 메서드
+		/**
+		 * 전체 예산 삭제 메서드
+		 * @return 현재 예산이 0원이 아니고, 현재 아이디가 존재하는 아이디라면 true이고, 아니면 false
+		 * @throws RecordNotFoundException
+		 */
 		public boolean removeBudget() throws RecordNotFoundException{
 			int currentIndex = exist(currentMemberId);
 			int currentBudget = members.get(currentIndex).getBudget();
@@ -678,7 +718,15 @@ public class MemberService {
 		
 		//지출 메서드
 		
-		//지출 등록 메서드
+		/**
+		 * 지출 등록 메서드
+		 * @param currentDate 현재 날짜
+		 * @param spend 지출
+		 * @param spendType 지출 항목
+		 * @param spendMethod 결제 수단
+		 * @return 현재 아이디가 존재하고 지출이 등록되면 true, 아니면 false
+		 * @throws CommonException
+		 */
 		public boolean addSpend(String currentDate, int spend, String spendType, String spendMethod) throws CommonException {
 			int currentIndex = exist(currentMemberId);
 			int currentBudget =  members.get(currentIndex).getBudget();
@@ -702,7 +750,16 @@ public class MemberService {
 		}
 		
 		
-		//지출 등록 메서드 - 초기화용
+		/**
+		 * 지출 등록 메서드 - 초기화용, 테스트용
+		 * @param dto 객체 
+		 * @param currentDate 현재 날짜
+		 * @param spend 지출
+		 * @param spendType 지출항목
+		 * @param spendMethod 결제수간
+		 * @return 현재 아이디가 존재하고 지출이 등록되면 true, 아니면 false
+		 * @throws CommonException
+		 */
 		public boolean addSpend(Member dto, String currentDate, int spend, String spendType, String spendMethod) throws CommonException {
 			int index = exist(dto.getMemberId());
 			int currentBudget =  members.get(index).getBudget();
@@ -723,7 +780,9 @@ public class MemberService {
 			
 		}
 		
-		//지출 전체 조회 메서드
+		/**
+		 * 지출 전체 조회 메서드
+		 */
 		public void getSpend() {
 			int currentIndex = exist(currentMemberId);
 			
@@ -755,7 +814,12 @@ public class MemberService {
 			
 		}
 
-		//지출 항목 상세 조회 메서드
+		/**
+		 * 지출 항목 상세 조회 메서드
+		 * @param spendType 지출 항목
+		 * @return 지출 항목에 해당되는 값들 더하여서 sumTypeSpend 반환
+		 * @throws RecordNotFoundException
+		 */
 		public int getTypeSpend(String spendType) throws RecordNotFoundException {
 				int currentIndex = exist(currentMemberId);
 				int sumTypeSpend = 0;
@@ -777,13 +841,19 @@ public class MemberService {
 			}
 
 		
-		// 메누에서 쓸 시작날짜 불러오는 메서드
+		/**
+		 * 지출 시작날짜 불러오는 메서드
+		 * @return 지출 시작날짜
+		 */
 		public String getSpendStartDates() {
 			int currentIndex = exist(currentMemberId);
 			return members.get(currentIndex).getSpendDates(0);
 		}
 
-		//메뉴에서 쓸 시작날짜 불러오는 메서드
+		/**
+		 * 지출 끝날짜 불러오는 메서드
+		 * @return
+		 */
 		public String getSpendFinishDates() {
 			int currentIndex = exist(currentMemberId);
 			int index=members.get(currentIndex).getSpendSize()-1;
@@ -792,7 +862,12 @@ public class MemberService {
 		}
 		
 		
-		// 지출 기간별 상세 조회 메서드
+		/**
+		 * 지출 기간별 상세 조회 메서드
+		 * @param startDate 시작 날짜
+		 * @param finishDate 끝 날짜
+		 * @throws RecordNotFoundException
+		 */
 		public void getDateSpend(String startDate, String finishDate) throws RecordNotFoundException {
 			int currentIndex = exist(currentMemberId);
 			int finishCount=0;
@@ -836,8 +911,13 @@ public class MemberService {
 					
 				}
 		}
-
-		//지출 수단별 상세 조회 메서드
+		
+		/**
+		 * 결제 수단별 상세 조회 메서드
+		 * @param spendMethod 결제 수단
+		 * @return 사용자가 선택한 결제수단의 지출 총 합
+		 * @throws RecordNotFoundException
+		 */
 		public int getMethodSpend(String spendMethod) throws RecordNotFoundException {
 			int currentIndex = exist(currentMemberId);
 			int sumMethodSpend = 0;
@@ -858,6 +938,13 @@ public class MemberService {
 			throw new RecordNotFoundException();
 		}
 
+		/**
+		 * 지출 삭제
+		 * @param date 날짜
+		 * @param spend 지출
+		 * @param spendType 지출 항목
+		 * @param spendMethod 결제 수단
+		 */
 		public void removeSpend(String date, int spend, String spendType, String spendMethod) {
 				int currentIndex = exist(currentMemberId);
 				int currentBudget = members.get(currentIndex).getBudget();
@@ -875,7 +962,9 @@ public class MemberService {
 			
 		}
 
-		//지출항목별 비율 - 지출 항목 - 1.식비 2.주거비 3.의류비 4.교통비 5.문화비 6.기타
+		/**
+		 * 전체 지출 항목별 비율 조회 메서드 - 지출 항목 : 1.식비 2.주거비 3.의류비 4.교통비 5.문화비 6.기타
+		 */
 		public void getSpendTypePortion() {
 			int currentIndex = exist(currentMemberId);
 			int spendSize = members.get(currentIndex).getSpendSize();
@@ -939,7 +1028,7 @@ public class MemberService {
 			
 			
 			System.out.print("[주거비] ");
-			//주거비 비율만큼 ■ 프린트 
+			//주거비 비율만큼 □ 프린트 
 			for (int i = 0; i < houseExpensesPortion*width/100 ; i++ ) {
 				System.out.print("□");
 			}
@@ -956,7 +1045,7 @@ public class MemberService {
 			System.out.println("\t" + clothingCost + "원");
 			
 			System.out.print("[교통비] ");
-			//교통비 비율만큼 ■ 프린트 
+			//교통비 비율만큼 □ 프린트 
 			for (int i = 0; i < transportationFeePortion*width/100 ; i++ ) {
 				System.out.print("□");
 			}
@@ -973,7 +1062,7 @@ public class MemberService {
 			
 			
 			System.out.print(" [기타] ");
-			//기타 비율만큼 ■ 프린트 
+			//기타 비율만큼 □ 프린트 
 			for (int i = 0; i < transportationFeePortion*width/100 ; i++ ) {
 				System.out.print("□");
 			}
