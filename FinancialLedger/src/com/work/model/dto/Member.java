@@ -6,6 +6,8 @@ package com.work.model.dto;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.work.util.Utility;
+
 
 /**
  * <pre>
@@ -71,7 +73,7 @@ public class Member {
 	int totalInMoney = 0;
 	int totalOutMoney = 0;
 	
-	
+	Utility util = new Utility();
 
 
 	/**
@@ -186,7 +188,7 @@ public class Member {
 	 */
 	public Member(String memberId, String memberPw, String name, String mobile, String email, String date) {
 		this(memberId, memberPw, name, mobile, email);
-		this.date= date;
+		this.date= util.getCurrentDate();
 	}
 	
 	

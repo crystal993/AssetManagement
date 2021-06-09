@@ -57,7 +57,7 @@ public class MemberService {
 		addMember(dto5);
 		
 		//dto1 예산 테스트 용, 지출 테스트용
-		addBudget(dto1,50000);
+		addBudget(dto1,500000);
 		
 		addIncome(dto1,"2021-06-04",5000,"배당금");
 		addIncome(dto1,"2021-06-04",5000,"용돈");
@@ -81,13 +81,13 @@ public class MemberService {
 		addSpend(dto1,"2021-06-08",2000,"교통비","기타");
 		
 		//dto2 수입 테스트 용
-		addBudget(dto2,50000);
+		addBudget(dto2,500000);
 				
 		addIncome(dto2,"2021-06-04",5000,"배당금");
 		addIncome(dto2,"2021-06-04",5000,"용돈");
 		addIncome(dto2,"2021-06-05",2000,"기타");
 		addIncome(dto2,"2021-06-06",2000,"용돈");
-		addIncome(dto2,"2021-06-06",400000,"월급");
+		addIncome(dto2,"2021-06-06",50000,"월급");
 		addIncome(dto2,"2021-06-07",3000,"배당금");
 		addIncome(dto2,"2021-06-07",3000,"용돈");
 		
@@ -437,7 +437,7 @@ public class MemberService {
 			}
 			
 			System.out.println(" ▶ 총 수입 : " + sumIncomeMoney +"");
-			System.out.println(" ▶ 예산 : " + members.get(currentIndex).getBudget()+"\n");
+			System.out.println(" ▶ 현재 예산 : " + members.get(currentIndex).getBudget()+"\n");
 		}
 		else {
 			System.out.println(">> 수입 내역이 존재하지 않습니다.\n");
@@ -477,7 +477,7 @@ public class MemberService {
 							if(sumDateIncome > 0) {
 								System.out.println("\n["+startDate+" ~ "+finishDate+"]\n");
 								System.out.println("▶ 총 수입 :"+sumDateIncome);
-								System.out.println("▶ 총 예산 :"+getBudget());
+								System.out.println("▶ 총 예산 :"+members.get(currentIndex).getBudget());
 							} else {
 							}
 						
@@ -572,7 +572,7 @@ public class MemberService {
 		
 		System.out.print(">> [총 수입] :"+sumIncome+"원\n");
 		
-		System.out.print("[용돈] ");
+		System.out.print(" [용돈] ");
 		//용돈 비율만큼 ■ 프린트 
 		for (int i = 0; i < pinMoneyPortion*width/100 ; i++ ) {
 			System.out.print("■");
@@ -581,7 +581,7 @@ public class MemberService {
 		System.out.println("    "+pinMoney+"원");
 		
 		
-		System.out.print("[월급] ");
+		System.out.print(" [월급] ");
 		//월급 비율만큼 ■ 프린트 
 		for (int i = 0; i < salaryPortion*width/100 ; i++ ) {
 			System.out.print("□");
@@ -598,7 +598,7 @@ public class MemberService {
 		System.out.print(" " + (int)dividendPortion + "%");
 		System.out.println("    " + dividend + "원");
 		
-		System.out.print("[기타] ");
+		System.out.print(" [기타] ");
 		//기타 비율만큼 ■ 프린트 
 		for (int i = 0; i < etcPortion*width/100 ; i++ ) {
 			System.out.print("□");
@@ -746,7 +746,7 @@ public class MemberService {
 				}
 				
 				System.out.println(" ▶ 총 지출 : " + sumSpendMoney +"");
-				System.out.println(" ▶ 예산 : " + members.get(currentIndex).getBudget()+"\n");
+				System.out.println(" ▶ 현재 예산 : " + members.get(currentIndex).getBudget()+"\n");
 			}
 			else {
 				System.out.println(">> 지출 내역이 존재하지 않습니다.\n");
@@ -929,7 +929,7 @@ public class MemberService {
 			
 			System.out.print(">> [총 지출] :"+sumSpend+"원\n");
 			
-			System.out.print("[식비] ");
+			System.out.print(" [식비] ");
 			//식비 비율만큼 ■ 프린트 
 			for (int i = 0; i < foodExpensesPortion*width/100 ; i++ ) {
 				System.out.print("■");
@@ -972,7 +972,7 @@ public class MemberService {
 			System.out.println("\t" + culturalCost + "원");
 			
 			
-			System.out.print("[기타] ");
+			System.out.print(" [기타] ");
 			//기타 비율만큼 ■ 프린트 
 			for (int i = 0; i < transportationFeePortion*width/100 ; i++ ) {
 				System.out.print("□");

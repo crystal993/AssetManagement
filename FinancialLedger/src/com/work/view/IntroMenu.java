@@ -73,7 +73,7 @@ public class IntroMenu {
 	 * @throws DuplicateException 
 	 */
 	public void introMenu() {
-		printTitle("회원관리시스템 메인메뉴");
+		printTitle("가계부 프로그램 초기 메뉴");
 		
 		printMenuItem("1. 로그인\t");
 		printMenuItem("2. 회원가입");
@@ -218,8 +218,7 @@ public class IntroMenu {
 			System.out.println("[입력 형식 오류] : 메뉴 번호는 숫자만 입력하기 바랍니다.");
 			introMenu();
 		}
-		scanner.close();
-		
+			scanner.close();
 	}
 	
 	/**
@@ -242,7 +241,15 @@ public class IntroMenu {
 		} catch (CommonException e) {
 			System.out.println("존재하지 않거나 잘못 입력된 번호입니다.");
 		}
-		scanner.close();
+		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
+		int no = scanner.nextInt();
+		
+		if(no == 0)
+		{
+			introMenu();
+		}
+			scanner.close();
+
 	}
 	/**
 	 * <pre>
@@ -262,7 +269,14 @@ public class IntroMenu {
 		} catch (CommonException e) {
 			System.out.println("존재하지 않거나 잘못 입력된 번호입니다.");
 		}
-		scanner.close();
+		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
+		int no = scanner.nextInt();
+		
+		if(no == 0)
+		{
+			introMenu();
+		}
+			scanner.close();
 	}
 	
 	/**
@@ -291,7 +305,14 @@ public class IntroMenu {
 		} catch (CommonException e) {
 			System.out.println("존재하지 않거나 잘못 입력된 번호입니다.");
 		}
-		scanner.close();
+		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
+		int no = scanner.nextInt();
+		
+		if(no == 0)
+		{
+			introMenu();
+		}
+			scanner.close();
 	}
 	
 	/**
