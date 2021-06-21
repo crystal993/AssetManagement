@@ -9,6 +9,7 @@ import java.util.HashMap;
 import com.work.exception.CommonException;
 import com.work.exception.DuplicateException;
 import com.work.exception.RecordNotFoundException;
+import com.work.model.dto.Budget;
 import com.work.model.dto.Member;
 import com.work.util.*;
 
@@ -27,8 +28,14 @@ public class MemberService {
 	
 	
 	Utility util = new Utility();
+	
+	
+	
 	/**회원들을 관리하기 위한 저장 구조 - ArrayList*/
 	private ArrayList<Member> members = new ArrayList<Member>();
+	
+	/**예산을 관리하기 위한 저장 구조 - ArrayList*/
+	private ArrayList<Budget> budgets = new ArrayList<Budget>();
 	
 	/**프로그램이 실행 될 동안 식별을 위해 쓰일 현재 멤버 아이디 변수*/
 	public String currentMemberId = null;
@@ -57,7 +64,11 @@ public class MemberService {
 		addMember(dto5);
 		
 		//dto1 테스트 용
-		addBudget(dto1,500000);
+		Budget budgetDto1 = new Budget("user01",60000);
+		Budget budgetDto2 = new Budget("user02",60000);
+		Budget budgetDto3 = new Budget("user03",60000);
+		Budget budgetDto4 = new Budget("user04",60000);
+		Budget budgetDto5 = new Budget("user05",60000);
 		
 		addIncome(dto1,"2021-06-04",5000,"배당금");
 		addIncome(dto1,"2021-06-04",5000,"용돈");
@@ -81,7 +92,6 @@ public class MemberService {
 		addSpend(dto1,"2021-06-08",2000,"교통비","기타");
 		
 		//dto2 테스트 용
-		addBudget(dto2,500000);
 				
 		addIncome(dto2,"2021-06-04",5000,"배당금");
 		addIncome(dto2,"2021-06-04",5000,"용돈");
@@ -349,7 +359,7 @@ public class MemberService {
 	 */
 	public boolean addIncome(String date, int revenue, String source) throws CommonException {
 				int currentIndex = exist(currentMemberId);
-				int currentBudget = members.get(currentIndex).getBudget();
+				int currentBudget = budgets.get(currentIndex).getBudget();
 				int updateBudget = 0;
 				
 				if (currentIndex >= 0) {
@@ -640,18 +650,14 @@ public class MemberService {
 	 * @return 현재 예산이 0원이고 현재 로그인된 아이디가 존재하면 true 반환, 아니면 false 반환
 	 * @throws DuplicateException
 	 */
-	public boolean addBudget(int budget) throws DuplicateException {
-		int currentIndex = exist(currentMemberId);
-		int currentBudget = members.get(currentIndex).getBudget();
+	public boolean addBudget(Budget budgetDto) throws DuplicateException {
 		
-		if(currentBudget == 0) {
-			if(currentIndex >= 0) {
-				members.get(currentIndex).setBudget(budget);
-				System.out.println("\n>> 예산이 "+budget+"원 등록되었습니다.");
-				return true;
-			}
+		int index = exist(budgetDto.getMemberId());
+		if(index >= 0) {
+			throw new DuplicateException(budgetDto.getMemberId());
 		}
-		throw new DuplicateException("예산 데이터가 이미 존재합니다.");
+		budgets.add(budgetDto);
+		return true;
 	}
 
 		/**
@@ -660,17 +666,23 @@ public class MemberService {
 		 * @param budget 예산
 		 * @return 현재 예산이 0원이고 현재 로그인된 아이디가 존재하면 true 반환, 아니면 false 반환
 		 */
-		public boolean addBudget(Member dto,int budget)  {
-			int currentIndex = exist(dto.getMemberId());
-			int currentBudget = members.get(currentIndex).getBudget();
+		public boolean addBudget(String memberid, int budget)  {
 			
-			if(currentBudget == 0) {
-				if(currentIndex >= 0) {
-					members.get(currentIndex).setBudget(budget);
-					return true;
-				}
+			int index = exist(dto.getMemberId());
+			if(index == -1) {
+				throw new RecordNotFoundException();
 			}
-			return false;
+			return members.get(index);
+//			int currentIndex = exist(memberid);
+//			int currentBudget = budget.getBudget();
+//			
+//			if(currentBudget == 0) {
+//				if(currentIndex >= 0) {
+//					members.get(currentIndex).setBudget(budget);
+//					return true;
+//				}
+//			}
+//			return false;
 		}
 
 		/**
