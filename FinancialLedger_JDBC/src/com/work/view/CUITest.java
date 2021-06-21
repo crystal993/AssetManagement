@@ -22,8 +22,6 @@ public class CUITest {
 		/* 초기 화면 메뉴 */
 		IntroMenu view = new IntroMenu();
 		
-		/* 초기화 회원 등록 */
-		view.service.initMembers();
 
 		/* 초기화 메뉴 수행 */
 		while(true) {

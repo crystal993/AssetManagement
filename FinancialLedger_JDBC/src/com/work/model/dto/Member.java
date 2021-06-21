@@ -34,10 +34,8 @@ public class Member {
 	private String email;
 	
 	/**회원 가입일 : 필수, 시스템 제공 */
-	private String date;
+	private String entryDate;
 	
-	
-	Utility util = new Utility();
 
 	
 	
@@ -47,23 +45,6 @@ public class Member {
 	public Member() {
 		// TODO Auto-generated constructor stub
 		
-	}
-	
-	
-	/**
-	 * 생성자 - 사용자 입력 필수 데이터
-	 * @param memberId 아이디 
-	 * @param memberPw 비밀번호
-	 * @param name 이름
-	 * @param mobile 휴대폰
-	 * @param email 이메일
-	 */
-	public Member(String memberId, String memberPw, String name, String mobile, String email) {
-		this.memberId = memberId;
-		this.memberPw = memberPw;
-		this.name = name;
-		this.mobile = mobile;
-		this.email = email;
 	}
 	
 
@@ -76,12 +57,17 @@ public class Member {
 	 * @param email 이메일
 	 * @param date 가입일
 	 */
-	public Member(String memberId, String memberPw, String name, String mobile, String email, String date) {
-		this(memberId, memberPw, name, mobile, email);
-		this.date= util.getCurrentDate();
+	public Member(String memberId, String memberPw, String name, String mobile, String email, String entryDate) {
+		super();
+		this.memberId = memberId;
+		this.memberPw = memberPw;
+		this.name = name;
+		this.mobile = mobile;
+		this.email = email;
+		this.entryDate = entryDate;
 	}
-	
-	
+
+
 
 	/**
 	 * @return the memberId
@@ -89,6 +75,7 @@ public class Member {
 	public String getMemberId() {
 		return memberId;
 	}
+
 
 
 	/**
@@ -166,16 +153,16 @@ public class Member {
 	/**
 	 * @return the date
 	 */
-	public String getDate() {
-		return date;
+	public String getEntryDate() {
+		return entryDate;
 	}
 
 
 	/**
 	 * @param date the date to set
 	 */
-	public void setDate(String date) {
-		this.date = date;
+	public void setEntryDate(String entryDate) {
+		this.entryDate = entryDate;
 	}
 
 
@@ -227,7 +214,7 @@ public class Member {
 		builder.append(email);
 		builder.append("\n");
 		builder.append("\t ▶ 날짜 : ");
-		builder.append(date);
+		builder.append(entryDate);
 		builder.append("\n");
 		return builder.toString();
 	}

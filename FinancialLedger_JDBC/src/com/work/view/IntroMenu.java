@@ -13,7 +13,7 @@ import com.work.exception.CommonException;
 import com.work.exception.DuplicateException;
 import com.work.exception.RecordNotFoundException;
 import com.work.model.dto.Member;
-import com.work.model.service.MemberService;
+import com.work.model.service.ManagementService;
 import com.work.util.Utility;
 
 /**
@@ -57,12 +57,11 @@ public class IntroMenu {
 
 	Utility util = new Utility();
 	
-	MemberService service = new MemberService();
+	ManagementService service = new ManagementService();
 
 	
 	Scanner scanner = new Scanner(System.in);
 	
-	String memberId = null;
 	
 	/** 기본 생성자 */
 	public IntroMenu() {
@@ -77,9 +76,6 @@ public class IntroMenu {
 	 * 4. 비밀번호 찾기
 	 * 5. 프로그램 종료
 	 * </pre>
-	 * @throws CommonException 
-	 * @throws RecordNotFoundException 
-	 * @throws DuplicateException 
 	 */
 	public void introMenu() {
 		printTitle("가계부 프로그램 초기 메뉴");
@@ -126,30 +122,26 @@ public class IntroMenu {
 	}
 	
 
-
 	/**
 	 * <pre>
 	 * <1> 초기 화면
 	 * 	1. 로그인 메뉴
 	 * </pre>
-	 * @throws CommonException 
-	 * @throws RecordNotFoundException 
-	 * @throws DuplicateException 
 	 */
 	public void loginMenu() {
 		printTitle("로그인 메뉴");
 		
 		print("아이디 : ");
-		memberId = scanner.next();
+		String memberId = scanner.next();
 		print("비밀번호 :");
 		String memberPw = scanner.next();
 		
-		try {
-			service.login(memberId,memberPw);
+
+		boolean check = service.login(memberId,memberPw);
+		if(check) {
 			System.out.println("[성공]"+ memberId + "님 로그인 되었습니다!");	
 			mainMenu();
-			
-		} catch (RecordNotFoundException | CommonException e) {
+		} else {	
 			System.out.println("[실패] 입력된 정보가 잘못되었거나 존재하지 않습니다.");
 			introMenu();
 		}
@@ -160,9 +152,6 @@ public class IntroMenu {
 	 * <pre>
 	 * <1> 초기 화면
 	 * 2. 회원 가입 메뉴
-	 * @throws DuplicateException 
-	 * @throws CommonException 
-	 * @throws RecordNotFoundException 
 	 */
 	public void signUpMenu() {
 		printTitle("회원 가입");
@@ -178,16 +167,12 @@ public class IntroMenu {
 		print("이메일 : ");
 		String email = scanner.next();
 		
-		boolean result;
-		try {
-			
-			service.addMember(memberId,memberPw,name,mobile,email);
+		boolean result = service.addMember(memberId, memberPw, name, mobile, email);
+		if(result) {
 			System.out.println("[회원가입 성공]"+memberId+"님 회원가입 되었습니다!");
 			loginMenu();
-		} catch (DuplicateException e) {
-			System.out.println("[회원가입 실패] 이미 등록된 아이디이거나 회원입니다.");
-			introMenu();
-		}	
+		}
+		System.out.println("[오류] 회원가입");
 		scanner.close();
 	}
 	
@@ -243,11 +228,11 @@ public class IntroMenu {
 		print("▷ 휴대폰 : ");
 		String mobile = scanner.next();
 		
-		try {
-			memberId = service.findId1(mobile);
-			System.out.println("▶ 회원님의 아이디는 "+memberId+" 입니다.");
 		
-		} catch (CommonException e) {
+		String memberId = service.findId1(mobile);
+		if (memberId != null) {	
+			System.out.println("▶ 회원님의 아이디는 "+memberId+" 입니다.");
+		} else {
 			System.out.println("존재하지 않거나 잘못 입력된 번호입니다.");
 		}
 		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
@@ -272,9 +257,82 @@ public class IntroMenu {
 		print("귀하의 이메일을 입력하세요.\n");
 		print("▷ 이메일 : ");
 		String email = scanner.next();
-		try {
-			memberId = service.findId2(email);
+		
+		String memberId = service.findId2(email);
+		if (memberId != null) {	
 			System.out.println("▶ 회원님의 아이디는 "+memberId+" 입니다.");
+		} else {
+			System.out.println("존재하지 않거나 잘못 입력된 번호입니다.");
+		}
+		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
+		int no = scanner.nextInt();
+		
+		if(no == 0)
+		{
+			introMenu();
+		}
+			scanner.close();
+	}
+
+	/**
+	 * <pre>
+	 * <1> 초기 화면
+	 * 4. 비밀번호 찾기 메뉴
+	 * </pre>
+	 */
+	public void findPwMenu() {
+		String memberPw = null;
+		
+		printTitle("비밀번호 찾기");
+		
+		System.out.println(">> 비밀번호를 찾을 수단을 입력바랍니다.");
+		System.out.println("\t1. 휴대폰");
+		System.out.println("\t2. 이메일");
+		
+		print(">>  메뉴번호 입력 : ");
+		
+		int menuNo = scanner.nextInt();
+		
+		switch(menuNo) {
+		
+		case 1 :
+			findPwMobileMenu();
+			break;
+		
+		case 2 : 
+			findPwEmailMenu();
+			break;
+		default :	
+			System.out.println("[입력 형식 오류] : 메뉴 번호는 숫자만 입력하기 바랍니다.");
+			introMenu();
+		}
+			scanner.close();
+	}
+	
+	/**
+	 * <pre>
+	 * <1> 초기 화면
+	 * 4. 비밀번호 찾기 메뉴
+	 * 4-1. 비밀번호찾기 - 모바일
+	 * </pre>
+	 */
+	public void findPwMobileMenu() {
+		String memberPw = null;
+		
+		printTitle("비밀번호 찾기");
+		
+		System.out.println(">> 아이디를 입력바랍니다.");
+		print("▷ 아이디 : ");
+		String memberId = scanner.next();
+		
+		System.out.println(">> 휴대폰 번호를 입력바랍니다.");
+		print("▷ 휴대폰 : ");
+		String mobile = scanner.next();
+		
+		try {
+			String tempMemberPw = service.findPw(memberId, mobile);
+			System.out.println("▶ 임시 비밀번호 "+tempMemberPw+ "가 발급되었습니다. \n로그인 후 변경 바랍니다.");
+			introMenu();
 		} catch (CommonException e) {
 			System.out.println("존재하지 않거나 잘못 입력된 번호입니다.");
 		}
@@ -292,9 +350,10 @@ public class IntroMenu {
 	 * <pre>
 	 * <1> 초기 화면
 	 * 4. 비밀번호 찾기 메뉴
+	 * 4-1. 비밀번호찾기 - 이메일
 	 * </pre>
 	 */
-	public void findPwMenu() {
+	public void findPwEmailMenu() {
 		String memberPw = null;
 		
 		printTitle("비밀번호 찾기");
@@ -303,8 +362,8 @@ public class IntroMenu {
 		print("▷ 아이디 : ");
 		String memberId = scanner.next();
 		
-		System.out.println(">> 휴대폰 번호를 입력바랍니다.");
-		print("▷ 휴대폰 : ");
+		System.out.println(">> 이메일을 입력바랍니다.");
+		print("▷ 이메일 : ");
 		String email = scanner.next();
 		
 		try {
@@ -1132,37 +1191,37 @@ public class IntroMenu {
 	 * </pre>
 	 */
 	private void addBudgetMenu() {
-		printTitle("1.초기 예산 등록");
-		
-		int budget = service.getBudget();
-		
-		if(budget == 0) {
-		
-			System.out.print("▶ 예산 입력 :");
-			budget = scanner.nextInt();
-			
-			try {
-				service.addBudget(budget);
-			} catch (DuplicateException e) {
-				System.out.println("");
-			}
-		}
-		else {
-			System.out.println(">> 예산 데이터가 이미 등록되어 있습니다. ");
-			System.out.println("▶ 내 예산 : "+budget+"원");
-			System.out.println(">> 이미 등록된 상태에서는 예산 조회, 변경, 삭제만 가능합니다.\n");
-		}
-		
-		
-		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
-		int no = scanner.nextInt();
-		
-		if(no == 0)
-		{
-			budgetMainMenu();
-		}
-			scanner.close();
-			System.exit(0);
+//		printTitle("1.초기 예산 등록");
+//		
+//		int budget = service.getBudget();
+//		
+//		if(budget == 0) {
+//		
+//			System.out.print("▶ 예산 입력 :");
+//			budget = scanner.nextInt();
+//			
+//			try {
+//				service.addBudget(budget);
+//			} catch (DuplicateException e) {
+//				System.out.println("");
+//			}
+//		}
+//		else {
+//			System.out.println(">> 예산 데이터가 이미 등록되어 있습니다. ");
+//			System.out.println("▶ 내 예산 : "+budget+"원");
+//			System.out.println(">> 이미 등록된 상태에서는 예산 조회, 변경, 삭제만 가능합니다.\n");
+//		}
+//		
+//		
+//		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
+//		int no = scanner.nextInt();
+//		
+//		if(no == 0)
+//		{
+//			budgetMainMenu();
+//		}
+//			scanner.close();
+//			System.exit(0);
 	}
 	
 	/**
@@ -1269,11 +1328,21 @@ public class IntroMenu {
 	 * </pre>
 	 */
 	public void getMyInfoMenu() {
-		try {
+		
 			printTitle("내정보 조회");
 			
-			Member dto = service.getMember(service.currentMemberId);
-			System.out.println(dto);
+			System.out.print("▶ 아이디 : ");
+			String memberId = scanner.next();
+			
+			System.out.print("▶ 비밀번호 : ");
+			String memberPw = scanner.next();
+			
+			Member dto = service.getMember(memberId, memberPw);
+			if(dto != null) {
+				System.out.println(dto);
+			} else {
+				System.out.println("조회 실패 : 회원정보가 존재하지 않습니다.");
+			}
 			
 			System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
 			int no = scanner.nextInt();
@@ -1283,9 +1352,9 @@ public class IntroMenu {
 				mainMenu();
 			}
 				introMenu();
-		} catch (RecordNotFoundException e) {
+		
 			System.out.println("[오류] 존재하지 않는 회원입니다.");
-		}
+		
 		scanner.close();
 	}
 	
