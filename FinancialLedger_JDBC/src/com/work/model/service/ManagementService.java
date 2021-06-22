@@ -189,11 +189,8 @@ public class ManagementService {
 	 * @return 회원이 존재하면 탈퇴 후 true, 존재하지 않으면 오류
 	 * @throws RecordNotFoundException
 	 */
-	public int removeMember(String memberId, int removeNo) { 
-		if(removeNo == 1) { 
-			return memberDao.removeMember(removeNo);
-		} 
-		return 0;
+	public boolean removeMember(String memberId) { 
+		return memberDao.removeMember(memberId);
 	}
 	
 	

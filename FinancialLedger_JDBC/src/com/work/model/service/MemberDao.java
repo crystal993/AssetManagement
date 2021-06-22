@@ -626,7 +626,7 @@ public class MemberDao {
 	 * @return 회원이 존재하면 탈퇴 후 true, 존재하지 않으면 오류
 	 * @throws RecordNotFoundException
 	 */
-	public int removeMember(int removeNo) { 
+	public boolean removeMember(String memberId) { 
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		
@@ -635,11 +635,9 @@ public class MemberDao {
 		
 		try {
 			// 2. 통로 생성 , 서버와 통로 연결
-			String sql = "update member set memberpw=? where memberid=? and memberPw=?";
+			String sql = "delete member where memberid=?";
 			stmt = conn.prepareStatement(sql);
-			stmt.setString(1, modifyMemberPw);
-			stmt.setString(2, memberId);
-			stmt.setString(3, memberPw);
+			stmt.setString(1, memberId);
 			
 			//3. sql구문 실행 요청, 통로 이용
 			// c u d => stmt.executeUpdate()
@@ -650,7 +648,7 @@ public class MemberDao {
 			}
 			
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			System.out.println("[오류] 회원 탈퇴");
 			e.printStackTrace();
 		} finally {
 			
