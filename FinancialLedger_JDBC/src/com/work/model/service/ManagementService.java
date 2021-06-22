@@ -4,10 +4,13 @@
 package com.work.model.service;
 
 
+import java.util.ArrayList;
+
 import com.work.exception.CommonException;
 import com.work.exception.DuplicateException;
 import com.work.exception.RecordNotFoundException;
 import com.work.model.dto.Budget;
+import com.work.model.dto.Income;
 import com.work.model.dto.Member;
 import com.work.util.Utility;
 
@@ -214,26 +217,10 @@ public class ManagementService {
 	 * @param date 날짜
 	 * @param revenue 수입
 	 * @param source 수입 출처
-	 * @return 회원 존재하면 날짜, 수입, 수입출처 등록되면 true, 아니면 false
-	 * @throws CommonException
+	 * @return 등록되면 true, 아니면 false
 	 */
-	public boolean addIncome(String date, int revenue, String source) {
-				return false;
-	}
-	
-	
-
-	/**
-	 * 수입 내역 등록 메서드 - 초기화용
-	 * @param dto 객체
-	 * @param date 날짜 
-	 * @param revenue 수입
-	 * @param source 수입 출처 
-	 * @return 아이디가 존재하고, 수입이 등록되면 true 반환, 아니면 false 반환 
-	 * @throws CommonException
-	 */
-	public boolean addIncome(Member dto, String date, int revenue, String source) {
-			return false;
+	public boolean addIncome(String memberId, int revenue, String source) {
+			return incomeDao.addIncome(memberId,revenue,source);
 	}
 	
 
@@ -243,41 +230,44 @@ public class ManagementService {
 	 * @param revenue 수입
 	 * @param source 수입 출처
 	 */
-	public void removeIncome(String date, int revenue, String source) {
-				
+	public boolean removeIncome(String memberId, int num) {
+			return incomeDao.removeIncome(memberId, num);
 	}
 	
+
 	/**
 	 * 수입 전체 조회 
+	 * @param memberId 아이디
+	 * @return 수입목록
 	 */
-	public void getIncome() {
-		
+	public ArrayList<Income> getIncome(String memberId) {
+		return IncomeDao.getIncome(memberId);
 	}
 	
 	/**
-	 * 상세조회 1. 기간별 조회
+	 * 상세조회 1. 기간별 조회 
+	 * @param memberId
 	 * @param startDate
 	 * @param finishDate
-	 * @throws RecordNotFoundException
 	 */
-	public void getDateIncome(String startDate, String finishDate) {
-		
+	public ArrayList<Income> getDateIncome(String memberId, String startDate, String finishDate) {
+		return incomeDao.getDateIncome(memberId, startDate, finishDate);
 	}
 			
 	/**
 	 * 수입 시작날짜 조회 메서드
 	 * @return 수입 시작날짜 
 	 */
-	public String getIncomeStartDates() {
-		return null;
+	public String getIncomeStartDates(String memberId) {
+		return incomeDao.getIncomeStartDates(memberId);
 	}
 	
 	/**
 	 * 수입 끝날짜 조회 메서드
 	 * @return 수입 끝날짜
 	 */
-		public String getIncomeFinishDates() {
-			return null;
+		public String getIncomeFinishDates(String memberId) {
+			return incomeDao.getIncomeFinishDates(memberId);
 		}
 	
 	
@@ -287,15 +277,71 @@ public class ManagementService {
 	 * @return 수입출처별 수입의 합계, sumItemIncome
 	 * @throws RecordNotFoundException
 	 */
-	public int getItemIncome(String source) {
-		return 0;
+	public int getItemIncome(String memberId, String source) {
+		return IncomeDao.getItemIncome(memberId,source);
 	}
 
 	/**
 	 * 상세 항목별 전체 비율 조회 - 출처 1. 용돈 2. 월급 3. 배당금 4.기타 
 	 */
-	public void getItemIncomePortion() {
+	public void getItemIncomePortion(String memberId) {
+//		// 돈 넣을 변수
+		int pinMoney = 0;
+		int salary = 0;
+		int dividend = 0;
+		int etc = 0;
+		int sumIncome = 0;
 		
+		int width =20;
+		
+		pinMoney = IncomeDao.getItemIncome(memberId,"용돈");
+		salary = IncomeDao.getItemIncome(memberId,"월급");
+		dividend = IncomeDao.getItemIncome(memberId,"배당금");
+		etc = IncomeDao.getItemIncome(memberId,"기타");
+		
+		sumIncome = pinMoney + salary + dividend + etc;
+		
+		//비율 계산
+		double pinMoneyPortion = (double)pinMoney/(double)sumIncome*100;
+		double salaryPortion = (double)salary/(double)sumIncome*100;
+		double dividendPortion = (double)dividend/(double)sumIncome*100;
+		double etcPortion = (double)etc/(double)sumIncome*100;
+		
+		System.out.print(">> [총 수입] :"+sumIncome+"원\n");
+		
+		System.out.print(" [용돈] ");
+		//용돈 비율만큼 ■ 프린트 
+		for (int i = 0; i < pinMoneyPortion*width/100 ; i++ ) {
+			System.out.print("■");
+		}
+		System.out.print(" "+(int)pinMoneyPortion+"%");
+		System.out.println("    "+pinMoney+"원");
+		
+		
+		System.out.print(" [월급] ");
+		//월급 비율만큼 □ 프린트 
+		for (int i = 0; i < salaryPortion*width/100 ; i++ ) {
+			System.out.print("□");
+		}
+		System.out.print(" " + (int)salaryPortion + "%");
+		System.out.println("    " + salary+"원");
+		
+		
+		System.out.print("[배당금] ");
+		//배당금 비율만큼 ■ 프린트 
+		for (int i = 0; i < dividendPortion*width/100 ; i++ ) {
+			System.out.print("■");
+		}
+		System.out.print(" " + (int)dividendPortion + "%");
+		System.out.println("    " + dividend + "원");
+		
+		System.out.print(" [기타] ");
+		//기타 비율만큼 □ 프린트 
+		for (int i = 0; i < etcPortion*width/100 ; i++ ) {
+			System.out.print("□");
+		}
+		System.out.print(" "+(int)etcPortion+"%");
+		System.out.println("    " + etc + "원");
 	}
 	
 	

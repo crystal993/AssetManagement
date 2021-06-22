@@ -148,7 +148,7 @@ public class Income {
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		
-		builder.append("[날짜 : ");
+		builder.append(". 날짜 : ");
 		builder.append(incomeDates);
 		builder.append(", 수입 : ");
 		builder.append(income);

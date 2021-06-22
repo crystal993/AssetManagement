@@ -6,12 +6,14 @@ package com.work.view;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 import com.work.exception.CommonException;
 import com.work.exception.DuplicateException;
 import com.work.exception.RecordNotFoundException;
+import com.work.model.dto.Income;
 import com.work.model.dto.Member;
 import com.work.model.service.ManagementService;
 import com.work.util.Utility;
@@ -508,11 +510,11 @@ public class IntroMenu {
 		String source = scanner.next();
 		
 	
-			service.addIncome(util.getCurrentDate(), revenue, source);
-	
-			// TODO Auto-generated catch block
-			System.out.println("수입 내역이 존재하지 않습니다.");
-		
+		boolean result = service.addIncome(memberId, revenue, source);
+		if(result) {
+		System.out.println("수입 내역이 등록되었습니다.");
+		}
+		System.out.println("[오류]수입 내역 등록");
 		
 		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
 		int no = scanner.nextInt();
@@ -533,24 +535,24 @@ public class IntroMenu {
 	 */
 	public void removeIncomeMenu(String memberId) {
 		printTitle("수입 내역 삭제");
+		
+		service.getIncome(memberId);
+		ArrayList<Income> list = service.getIncome(memberId);
+		int count=1;
+		for(Income income : list) {
+			System.out.print(count++);
+			System.out.println(income);
+		}
+		
 		System.out.println("<"+util.getCurrentDate()+">");
-		System.out.println("\n>> 삭제할 수입은 숫자만 입력하세요.");
-		print("\n▶ 삭제할 수입 : ");
-		int revenue = scanner.nextInt();
+		System.out.println("\n>> 삭제할 수입내역 목록 번호를 입력하세요.");
+		print("\n▶ 삭제할 수입 목록 번호 : ");
+		int num = scanner.nextInt();
+		boolean result = service.removeIncome(memberId, num);
 		
-		
-		System.out.println();
-		System.out.println("\n>> 출처 - 1.월급 2.용돈 3.배당금 4.기타 ");
-		System.out.println("출처는 \"문자\"로 입력해주시길 바랍니다.");
-		print("\n▶ 삭제할 출처 : ");
-		String source = scanner.next();
-		
-		System.out.println();
-		System.out.println("\n>>날짜는 yyyy-MM-dd 형식 지켜주시길 바랍니다.");
-		print("\n▶ 삭제할 날짜 : ");
-		String date = scanner.next();
-		
-		service.removeIncome(date, revenue, source);
+		if(result) {
+			System.out.println("해당 내역이 삭제되었습니다.");
+		}
 		
 		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
 		int no = scanner.nextInt();
@@ -608,7 +610,15 @@ public class IntroMenu {
 	 */
 	public void getAllIncomeMenu(String memberId) {
 		printTitle("수입 전체 조회 화면");
-		service.getIncome();
+		
+		System.out.println(memberId+" 님 수입 전체 조회 목록\n");
+		
+		ArrayList<Income> list = service.getIncome(memberId);
+		int count=1;
+		for(Income income : list) {
+			System.out.print(count++);
+			System.out.println(income);
+		}
 		
 		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
 		int no = scanner.nextInt();
@@ -682,7 +692,7 @@ public class IntroMenu {
 		
 		//service.getItemIncome(source) 검사 위한 try
 	
-			int sumIncome = service.getItemIncome(source);
+			int sumIncome = service.getItemIncome(memberId, source);
 				if(sumIncome > 0) {
 					System.out.println("[수입 출처]"+source+" 총 수입 :" +sumIncome);
 				}
@@ -713,7 +723,7 @@ public class IntroMenu {
 	 */
 	private void getItemIncomePortionMenu(String memberId) {
 		printTitle("수입출처별 전체 비율 조회");
-		service.getItemIncomePortion();
+		service.getItemIncomePortion(memberId);
 		
 		System.out.println("\n>> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
 		int no = scanner.nextInt();
@@ -736,10 +746,10 @@ public class IntroMenu {
 	public void getPeiodDetailIncomeMenu(String memberId) {
 		printTitle("기간별 조회 전체 화면");
 		
-		print("\n▶ 현재 등록된 기간 ["+service.getIncomeStartDates()+" ~ "+service.getIncomeFinishDates()+"]");
+		print("\n▶ 현재 등록된 기간 ["+service.getIncomeStartDates(memberId)+" ~ "+service.getIncomeFinishDates(memberId)+"]");
 		
 		System.out.println("\n\n>>날짜는 현재 등록된 기간 내에서만 쓰시길 바랍니다.");
-		System.out.println(">>날짜는 yyyy-MM-dd 형식 지켜주시길 바랍니다.");
+		System.out.println(">>날짜는 yyyy/MM/dd 형식 지켜주시길 바랍니다.");
 		print("\n▶ 시작 기간 : ");
 		String startDate = scanner.next();
 		
@@ -749,14 +759,16 @@ public class IntroMenu {
 		System.out.println("\n \t <<조회>>");
 		
 		
-				service.getDateIncome(startDate, finishDate);
-			
-		
-			System.out.println();
-		
-		
+		ArrayList<Income> list = service.getDateIncome(memberId, startDate, finishDate);
+		int count=1;
+		if(list != null) {	
+			for(Income income : list) {
+				System.out.print(count++);
+				System.out.println(income);
+			}
+		} else { 
 			System.out.println("[오류] 현재 등록된 수입이 없거나 기간을 잘못 입력하였습니다.");
-		
+		}
 		
 		System.out.println("\n>> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
 		int no = scanner.nextInt();
