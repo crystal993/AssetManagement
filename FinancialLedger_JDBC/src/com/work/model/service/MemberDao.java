@@ -626,7 +626,39 @@ public class MemberDao {
 	 * @return 회원이 존재하면 탈퇴 후 true, 존재하지 않으면 오류
 	 * @throws RecordNotFoundException
 	 */
-	public boolean removeMember(Member dto) { 
+	public int removeMember(int removeNo) { 
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		
+		// 1. 드라이버 로딩, db 서버와 연결
+		conn = factory.getConnection();
+		
+		try {
+			// 2. 통로 생성 , 서버와 통로 연결
+			String sql = "update member set memberpw=? where memberid=? and memberPw=?";
+			stmt = conn.prepareStatement(sql);
+			stmt.setString(1, modifyMemberPw);
+			stmt.setString(2, memberId);
+			stmt.setString(3, memberPw);
+			
+			//3. sql구문 실행 요청, 통로 이용
+			// c u d => stmt.executeUpdate()
+			int rows = stmt.executeUpdate();
+			
+			if(rows > 0) {
+				return true;
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			
+			//6. 자원해제 : finally 구문으로 변경 수정
+			// 공장에게 위임
+			factory.close(conn, stmt);
+		}
+		
 		return false;
 	}
 	
