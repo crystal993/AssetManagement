@@ -18,6 +18,7 @@ import com.work.util.Utility;
  * <pre>
  * 회원 DAO 클래스
  * 
+ * ## Singleton Pattern
  * ## DAO Pattern
  * - 회원가입
  * 

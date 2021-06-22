@@ -34,7 +34,9 @@ public class ManagementService {
 	 * 외부에서 접근 못하게 private으로
 	 * 이 클래스 안에서만 쓸거기 때문에 */
 	MemberDao memberDao = MemberDao.getInstance();
-	
+	BudgetDao budgetDao = BudgetDao.getInstance();
+	IncomeDao incomeDao = IncomeDao.getInstance();
+	SpendDao spendtDao = SpendDao.getInstance();
 
 	
 	/** 기본 생성자 */
@@ -300,46 +302,36 @@ public class ManagementService {
 	
 	//예산 내역 관리 메서드들
 	
+
 	/**
-	 * 초기 예산 등록 메서드 - 사용자 입력
-	 * @param budget 예산
-	 * @return 현재 예산이 0원이고 현재 로그인된 아이디가 존재하면 true 반환, 아니면 false 반환
-	 * @throws DuplicateException
-	 */
-	public boolean addBudget(Budget budgetDto) {
-	
-		return false;
+	* 예산 등록 메서드
+	* @param memberId 아이디
+	* @param budget 예산
+	* @return 등록하면 true 반환, 아니면 false 반환
+	*/
+	public boolean addBudget(String memberId, int budget)  {
+		return budgetDao.addBudget(memberId,budget);
 	}
 
-		/**
-		 * 예산 등록 메서드 - 초기화용(테스트)
-		 * @param dto 객체
-		 * @param budget 예산
-		 * @return 현재 예산이 0원이고 현재 로그인된 아이디가 존재하면 true 반환, 아니면 false 반환
-		 */
-		public boolean addBudget(String memberid, int budget)  {
-			
 
-			return false;
-		}
+	/**
+	 * 현재 예산 조회 메서드
+	 * @param memberId 아이디
+	 * @return 존재하면 true 반환, 아니면 false 반환
+	 */
+	public int getBudget(String memberId) {
+		return budgetDao.getBudget(memberId);
+	}
 
-		/**
-		 * 현재 예산 조회 메서드
-		 * @return 예산 
-		 */
-		public int getBudget() {
-			return 0;
-		}
 
-		/**
-		 * 전체 예산 삭제 메서드
-		 * @return 현재 예산이 0원이 아니고, 현재 아이디가 존재하는 아이디라면 true이고, 아니면 false
-		 * @throws RecordNotFoundException
-		 */
-		public boolean removeBudget() {
-			return false;
-		
-		}
+	/**
+	 * 전체 예산 삭제 메서드
+	 * @param memberId 아이디
+	 * @return 삭제되면 true이고, 아니면 false
+	 */
+	public boolean removeBudget(String memberId) {
+		return budgetDao.removeBudget(memberId);
+	}
 		
 		
 		//지출 메서드

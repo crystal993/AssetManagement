@@ -25,5 +25,17 @@ package com.work.model.service;
  * @since jdk1.8
  */
 public class SpendDao {
-
+	
+	/**FactoryDao 객체 멤버변수 선언 및 할당 : 구현*/
+	private FactoryDao factory = FactoryDao.getInstance();
+	
+	/**MemberDao instance 객체로 생성 */
+	private static SpendDao instance = new SpendDao(); 
+	
+	private SpendDao() {
+	}
+	
+	public static SpendDao getInstance() {
+		return instance;
+	}
 }

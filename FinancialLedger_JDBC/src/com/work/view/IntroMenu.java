@@ -1203,37 +1203,36 @@ public class IntroMenu {
 	 * </pre>
 	 */
 	private void addBudgetMenu(String memberId) {
-//		printTitle("1.초기 예산 등록");
-//		
-//		int budget = service.getBudget();
-//		
-//		if(budget == 0) {
-//		
-//			System.out.print("▶ 예산 입력 :");
-//			budget = scanner.nextInt();
-//			
-//			try {
-//				service.addBudget(budget);
-//			} catch (DuplicateException e) {
-//				System.out.println("");
-//			}
-//		}
-//		else {
-//			System.out.println(">> 예산 데이터가 이미 등록되어 있습니다. ");
-//			System.out.println("▶ 내 예산 : "+budget+"원");
-//			System.out.println(">> 이미 등록된 상태에서는 예산 조회, 변경, 삭제만 가능합니다.\n");
-//		}
-//		
-//		
-//		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
-//		int no = scanner.nextInt();
-//		
-//		if(no == 0)
-//		{
-//			budgetMainMenu();
-//		}
-//			scanner.close();
-//			System.exit(0);
+		printTitle("1.초기 예산 등록");
+		
+		int budget = service.getBudget(memberId);
+		
+		if(budget == 0) {
+		
+			System.out.print("▶ 예산 입력 :");
+			budget = scanner.nextInt();
+	
+			service.addBudget(memberId,budget);
+
+			System.out.println("");
+			
+		}
+		else {
+			System.out.println(">> 예산 데이터가 이미 등록되어 있습니다. ");
+			System.out.println("▶ 내 예산 : "+service.getBudget(memberId)+"원");
+			System.out.println(">> 이미 등록된 상태에서는 예산 조회, 변경, 삭제만 가능합니다.\n");
+		}
+		
+		
+		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
+		int no = scanner.nextInt();
+		
+		if(no == 0)
+		{
+			budgetMainMenu(memberId);
+		}
+			scanner.close();
+			System.exit(0);
 	}
 	
 	/**
@@ -1246,7 +1245,7 @@ public class IntroMenu {
 	private void getBudgetMenu(String memberId) {
 		printTitle("2.현재 예산 조회");
 		
-		int budget = service.getBudget();
+		int budget = service.getBudget(memberId);
 		System.out.println("▶ 예산 :" + budget+"\n");
 		
 		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
@@ -1276,18 +1275,14 @@ public class IntroMenu {
 		print(">> 번호 입력 : ");
 		int removeNo = scanner.nextInt();
 		
-		if (removeNo == 1)
-		{
-			
-				service.removeBudget();
-		
-				System.out.println(">> 예산 데이터가 존재하지 않습니다.\n");
-			
-			System.out.println("▶ 예산 :" + service.getBudget()+"\n");
-		
+		if (removeNo == 1) {
+			service.removeBudget(memberId);
+			System.out.println(">> 예산 데이터가 존재하지 않습니다.\n");
+		} else {
+			System.out.println("▶ 예산 :" + service.getBudget(memberId)+"\n");
 			System.out.println("");
-		
 		}
+
 		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
 		int no = scanner.nextInt();
 		
