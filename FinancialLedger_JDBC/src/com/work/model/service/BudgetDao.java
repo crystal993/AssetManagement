@@ -174,6 +174,48 @@ public class BudgetDao {
 		return false;
 	}
 
+	/**
+	 * <pre>
+	 * 예산 수정 메서드
+	 * 이 메서드는 수입등록, 지출등록 메서드에서만 쓰는 용도. 
+	 * </pre>
+	 * @param memberId 아이디
+	 * @return 수정되면 true, 아니면 false
+	 */
+	public boolean updateBudget(String memberId, int money) {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		
+		try {
+			conn = factory.getConnection();
+	
+			String sql = "update budget set budget = ? where memberid=?";
+		
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt(1,money);
+			stmt.setString(2,memberId);
+			
+			int rows = stmt.executeUpdate();
+			
+			if(rows > 0) {
+				return true;
+			}
+			
+		} catch (SQLException e) {
+			System.out.println("[오류] ");
+			e.printStackTrace();
+		} finally {
+			
+			//6. 자원해제 : finally 구문으로 변경 수정
+			// 공장에게 위임
+			factory.close(conn, stmt);
+		}
+		
+		return false;
+	}
+
+
+
 	
 	
 	

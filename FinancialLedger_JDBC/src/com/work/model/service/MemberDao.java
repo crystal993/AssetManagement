@@ -151,9 +151,9 @@ public class MemberDao {
 	 * 6. 자원해제
 	 * @param memberId 아이디
 	 * @param memberPw 비밀번호
-	 * @return 성공시 true, 실패하면 false
+	 * @return 성공시 budget반환, 실패시 0
 	 */
-	public boolean login(String memberId, String memberPw) {
+	public int login(String memberId, String memberPw) {
 		
 		/** Connection DB 서버 연결 */
 		Connection conn = null;
@@ -170,7 +170,7 @@ public class MemberDao {
 		//conn = DriverManager.getConnection(url, user, password);
 		conn = factory.getConnection();
 		
-		String sql = "select memberid from member where memberid = ? and memberPw = ?";
+		String sql = "select m.memberid, b.budget from member m, budget b where m.memberid = ? and m.memberPw = ? and m.memberId = b.memberId";
 		
 		//3. 연결된 서버와 통로 개설 
 		stmt = conn.prepareStatement(sql);
@@ -185,7 +185,8 @@ public class MemberDao {
 		//5. 실행 결과 처리
 		if(rs.next()) {
 			String memberid = rs.getString("memberid");
-			return true;
+			int budget = rs.getInt("budget");
+			return budget;
 					
 		}
 		
@@ -199,7 +200,7 @@ public class MemberDao {
 			factory.close(conn, stmt, rs);
 		}
 		
-		return false;
+		return -1;
 	}
 	
 	

@@ -15,6 +15,7 @@ import com.work.exception.DuplicateException;
 import com.work.exception.RecordNotFoundException;
 import com.work.model.dto.Income;
 import com.work.model.dto.Member;
+import com.work.model.dto.Spend;
 import com.work.model.service.ManagementService;
 import com.work.util.Utility;
 
@@ -139,10 +140,10 @@ public class IntroMenu {
 		String memberPw = scanner.next();
 		
 
-		boolean check = service.login(memberId,memberPw);
-		if(check) {
+		int budget = service.login(memberId,memberPw);
+		if(budget != -1) {
 			System.out.println("[성공]"+ memberId + "님 로그인 되었습니다!");	
-			mainMenu(memberId);
+			mainMenu(memberId,budget);
 		} else {	
 			System.out.println("[실패] 입력된 정보가 잘못되었거나 존재하지 않습니다.");
 			introMenu();
@@ -420,7 +421,7 @@ public class IntroMenu {
 	 * 5.로그아웃
 	 * </pre>
 	 */
-	public void mainMenu(String memberId) {
+	public void mainMenu(String memberId, int budget) {
 		printTitle("메인 화면");
 		
 		printMenuItem("1.수입");
@@ -435,16 +436,16 @@ public class IntroMenu {
 		
 		switch(menuNo) {
 		case 1 : 
-			incomeMainMenu(memberId);
+			incomeMainMenu(memberId, budget);
 			break;
 		case 2 : 
-			spendMainMenu(memberId);
+			spendMainMenu(memberId, budget);
 			break;
 		case 3 : 
-			budgetMainMenu(memberId);
+			budgetMainMenu(memberId, budget);
 			break;
 		case 4 : 
-			myInfoMenu(memberId);
+			myInfoMenu(memberId, budget);
 			break;	
 		case 5 : 
 			introMenu();
@@ -462,7 +463,7 @@ public class IntroMenu {
 	 * <2>메인 화면
 	 * 1. 수입내역 관리 메인화면
 	 */
-	public void incomeMainMenu(String memberId) {
+	public void incomeMainMenu(String memberId, int budget) {
 		printTitle("수입 내역 관리 화면");
 		
 		printMenuItem("1.수입 내역 등록");
@@ -476,16 +477,16 @@ public class IntroMenu {
 		
 		switch(menuNo) {
 		case 1 : 
-			registerIncomeMenu(memberId);
+			registerIncomeMenu(memberId, budget);
 			break;
 		case 2 : 
-			getIncomeMainMenu(memberId);
+			getIncomeMainMenu(memberId, budget);
 			break;
 		case 3 : 
-			removeIncomeMenu(memberId);
+			removeIncomeMenu(memberId, budget);
 			break;
 		case 0 : 
-			mainMenu(memberId);
+			mainMenu(memberId, budget);
 			break;		
 		default : 
 			System.out.println("메뉴번호 오류");
@@ -497,31 +498,34 @@ public class IntroMenu {
 	/**
 	 * 수입 등록 화면
 	 */
-	public void registerIncomeMenu(String memberId) {
+	public void registerIncomeMenu(String memberId, int budget) {
 		printTitle("수입 내역 등록");
+		
+		int updateBudget = 0;
+		
 		System.out.println("<"+util.getCurrentDate()+">");
 		print("\n▶ 내 수입 : ");
 		int revenue = scanner.nextInt();
-		
+		updateBudget = budget + revenue;
 		System.out.println();
 		System.out.println("\n>> 출처 - 1.월급 2.용돈 3.배당금 4.기타 ");
 		System.out.println("출처는 \"문자\"로 입력해주시길 바랍니다.");
 		print("\n▶ 출처 : ");
 		String source = scanner.next();
-		
 	
 		boolean result = service.addIncome(memberId, revenue, source);
 		if(result) {
-		System.out.println("수입 내역이 등록되었습니다.");
+			System.out.println("수입 내역이 등록되었습니다.");
+		} else {
+			System.out.println("[오류]수입 내역 등록");
 		}
-		System.out.println("[오류]수입 내역 등록");
 		
 		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
 		int no = scanner.nextInt();
 		
 		if(no == 0)
 		{
-			incomeMainMenu(memberId);
+				incomeMainMenu(memberId,updateBudget);
 		}
 			scanner.close();
 			System.exit(0);
@@ -533,7 +537,7 @@ public class IntroMenu {
 	/**
 	 * 수입 삭제 화면
 	 */
-	public void removeIncomeMenu(String memberId) {
+	public void removeIncomeMenu(String memberId, int budget) {
 		printTitle("수입 내역 삭제");
 		
 		service.getIncome(memberId);
@@ -545,21 +549,22 @@ public class IntroMenu {
 		}
 		
 		System.out.println("<"+util.getCurrentDate()+">");
-		System.out.println("\n>> 삭제할 수입내역 목록 번호를 입력하세요.");
-		print("\n▶ 삭제할 수입 목록 번호 : ");
+		System.out.println("\n>> 삭제하시겠습니까? 예 - 1 아니오 - 그 외 번호");
 		int num = scanner.nextInt();
-		boolean result = service.removeIncome(memberId, num);
-		
-		if(result) {
-			System.out.println("해당 내역이 삭제되었습니다.");
-		}
+		if(num == 1) {
+			boolean result = service.removeIncome(memberId);
+			if(result) {
+				System.out.println("수입 내역이 삭제되었습니다.");
+			}
+			System.out.println("[오류] 수입 내역 삭제");
+		} 
 		
 		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
 		int no = scanner.nextInt();
 		
 		if(no == 0)
 		{
-			incomeMainMenu(memberId);
+			incomeMainMenu(memberId, budget);
 		}
 			scanner.close();
 			System.exit(0);
@@ -574,7 +579,7 @@ public class IntroMenu {
 	 * 2. 수입 상세 조회 화면  
 	 * </pre>
 	 */
-	public void getIncomeMainMenu(String memberId) {
+	public void getIncomeMainMenu(String memberId, int budget) {
 			printTitle("수입 조회 관리 화면");
 			
 			printMenuItem("1. 수입 전체 조회 화면");
@@ -587,13 +592,13 @@ public class IntroMenu {
 			
 			switch(menuNo) {
 			case 1 : 
-				getAllIncomeMenu(memberId);
+				getAllIncomeMenu(memberId, budget);
 				break;
 			case 2 : 
-				getDetailIncomeMenu(memberId);
+				getDetailIncomeMenu(memberId, budget);
 				break;
 			case 0 : 
-				incomeMainMenu(memberId);
+				incomeMainMenu(memberId, budget);
 				break;
 			default : 
 				System.out.println("메뉴번호 오류");
@@ -608,7 +613,7 @@ public class IntroMenu {
 	 * 1. 수입 전체 조회 화면
 	 * </pre>
 	 */
-	public void getAllIncomeMenu(String memberId) {
+	public void getAllIncomeMenu(String memberId, int budget) {
 		printTitle("수입 전체 조회 화면");
 		
 		System.out.println(memberId+" 님 수입 전체 조회 목록\n");
@@ -625,7 +630,7 @@ public class IntroMenu {
 		
 		if(no == 0)
 		{
-			incomeMainMenu(memberId);
+			incomeMainMenu(memberId, budget);
 		}
 			scanner.close();
 			System.exit(0);
@@ -639,7 +644,7 @@ public class IntroMenu {
 	 * 2. 수입 상세 조회 화면 
 	 * </pre> 
 	 */
-	public void getDetailIncomeMenu(String memberId) {
+	public void getDetailIncomeMenu(String memberId, int budget) {
 		printTitle("수입 상세 조회 관리 화면");
 		
 		printMenuItem("1. 수입출처별 상세 조회 화면");
@@ -653,16 +658,16 @@ public class IntroMenu {
 		
 		switch(menuNo) {
 		case 1 : 
-			getItemDetailIncomeMenu(memberId);
+			getItemDetailIncomeMenu(memberId, budget);
 			break;
 		case 2 : 
-			getItemIncomePortionMenu(memberId);
+			getItemIncomePortionMenu(memberId, budget);
 			break;	
 		case 3 : 
-			getPeiodDetailIncomeMenu(memberId);
+			getPeiodDetailIncomeMenu(memberId, budget);
 			break;
 		case 0 : 
-			getIncomeMainMenu(memberId);
+			getIncomeMainMenu(memberId, budget);
 			break;
 		default : 
 			System.out.println("메뉴번호 오류");
@@ -681,7 +686,7 @@ public class IntroMenu {
 	 * 		(1) 수입출처별 항목 전체 화면
 	 * </pre> 
 	 */
-	public void getItemDetailIncomeMenu(String memberId) {
+	public void getItemDetailIncomeMenu(String memberId, int budget) {
 		printTitle("수입출처별 수입 상세 조회");
 		
 		System.out.println("\n>> 출처 - 1.월급 2.용돈 3.배당금 4.기타 ");
@@ -708,7 +713,7 @@ public class IntroMenu {
 		
 		if(no == 0)
 		{
-			incomeMainMenu(memberId);
+			incomeMainMenu(memberId, budget);
 		}
 			scanner.close();
 			System.exit(0);
@@ -721,7 +726,7 @@ public class IntroMenu {
 	 * 		(1) 수입출처별 전체 비율 화면
 	 * </pre> 
 	 */
-	private void getItemIncomePortionMenu(String memberId) {
+	private void getItemIncomePortionMenu(String memberId, int budget) {
 		printTitle("수입출처별 전체 비율 조회");
 		service.getItemIncomePortion(memberId);
 		
@@ -730,7 +735,7 @@ public class IntroMenu {
 		
 		if(no == 0)
 		{
-			getDetailIncomeMenu(memberId);
+			getDetailIncomeMenu(memberId, budget);
 		}
 			scanner.close();
 			System.exit(0);
@@ -743,7 +748,7 @@ public class IntroMenu {
 	 * 		(2) 기간별 조회 전체 화면
 	 * </pre> 
 	 */
-	public void getPeiodDetailIncomeMenu(String memberId) {
+	public void getPeiodDetailIncomeMenu(String memberId, int budget) {
 		printTitle("기간별 조회 전체 화면");
 		
 		print("\n▶ 현재 등록된 기간 ["+service.getIncomeStartDates(memberId)+" ~ "+service.getIncomeFinishDates(memberId)+"]");
@@ -775,7 +780,7 @@ public class IntroMenu {
 		
 		if(no == 0)
 		{
-			getDetailIncomeMenu(memberId);
+			getDetailIncomeMenu(memberId, budget);
 		}
 			scanner.close();
 			System.exit(0);
@@ -790,7 +795,7 @@ public class IntroMenu {
 	 *  3. 지출 내역 삭제
 	 *  </pre>
 	 */
-	private void spendMainMenu(String memberId) {
+	private void spendMainMenu(String memberId, int budget) {
 		printTitle("지출 내역 관리 화면");
 		
 		printMenuItem("1.지출 내역 등록");
@@ -804,16 +809,16 @@ public class IntroMenu {
 		
 		switch(menuNo) {
 		case 1 : 
-			addSpendMenu(memberId);
+			addSpendMenu(memberId,budget);
 			break;
 		case 2 : 
-			getSpendMainMenu(memberId);
+			getSpendMainMenu(memberId,budget);
 			break;
 		case 3 : 
-			removeSpendMenu(memberId);
+			removeSpendMenu(memberId,budget);
 			break;
 		case 0 : 
-			mainMenu(memberId);
+			mainMenu(memberId,budget);
 			break;	
 		default : 
 			System.out.println("메뉴번호 오류");
@@ -828,7 +833,7 @@ public class IntroMenu {
 	 * 1. 지출 내역 등록
 	 *  </pre>
 	 */
-	private void addSpendMenu(String memberId) {
+	private void addSpendMenu(String memberId, int budget) {
 		printTitle("지출 내역 등록");
 		System.out.println("<"+util.getCurrentDate()+">");
 		print("\n▶ 내 지출 : ");
@@ -847,18 +852,18 @@ public class IntroMenu {
 		String spendMethod = scanner.next();
 		
 	
-			service.addSpend(util.getCurrentDate(), spend, spendType, spendMethod);
-			
-			// TODO Auto-generated catch block
+		boolean result = service.addSpend(memberId, spend, spendType, spendMethod);
+		if (result) {
+			System.out.println("[성공] 지출내역 등록");
+		} else {	
 			System.out.println("지출 내역이 존재하지 않습니다.");
-		
-		
+		}
 		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
 		int no = scanner.nextInt();
 		
 		if(no == 0)
 		{
-			spendMainMenu(memberId);
+			spendMainMenu(memberId, budget);
 		}
 			scanner.close();
 			System.exit(0);
@@ -874,7 +879,7 @@ public class IntroMenu {
 	 *  2. 지출 내역 조회
 	 *  </pre>
 	 */
-	private void getSpendMainMenu(String memberId) {
+	private void getSpendMainMenu(String memberId, int budget) {
 		printTitle("지출 조회 관리 화면");
 		
 		printMenuItem("1. 지출 전체 조회 화면");
@@ -887,13 +892,13 @@ public class IntroMenu {
 		
 		switch(menuNo) {
 		case 1 : 
-			getAllSpendMenu(memberId);
+			getAllSpendMenu(memberId, budget);
 			break;
 		case 2 : 
-			getDetailSpendMenu(memberId);
+			getDetailSpendMenu(memberId, budget);
 			break;
 		case 0 : 
-			spendMainMenu(memberId);
+			spendMainMenu(memberId, budget);
 			break;
 		default : 
 			System.out.println("메뉴번호 오류");
@@ -909,16 +914,25 @@ public class IntroMenu {
 	 * 2-1. 지출 전체 조회 화면
 	 * </pre>
 	 */
-	public void getAllSpendMenu(String memberId) {
+	public void getAllSpendMenu(String memberId, int budget) {
 	printTitle("지출 전체 조회 화면");
-	service.getSpend();
+	
+	System.out.println(memberId+" 님 지출 전체 조회 목록\n");
+	
+	ArrayList<Spend> list = service.getSpend(memberId);
+	int count=1;
+	for(Spend spend : list) {
+		System.out.print(count++);
+		System.out.println(spend);
+	}
+	
 	
 	System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
 	int no = scanner.nextInt();
 	
 	if(no == 0)
 	{
-		spendMainMenu(memberId);
+		spendMainMenu(memberId, budget);
 	}
 		scanner.close();
 		System.exit(0);
@@ -933,7 +947,7 @@ public class IntroMenu {
 	 * 2-2. 지출 상세 조회 화면
 	 * </pre> 
 	 */
-	public void getDetailSpendMenu(String memberId) {
+	public void getDetailSpendMenu(String memberId, int budget) {
 		printTitle("지출 상세 조회 관리 화면");
 		
 		printMenuItem("1. 지출항목별 상세조회 화면");
@@ -949,19 +963,19 @@ public class IntroMenu {
 		
 		switch(menuNo) {
 		case 1 : 
-			getTypeDetailSpendMenu(memberId);
+			getTypeDetailSpendMenu(memberId, budget);
 			break;
 		case 2 : 
-			 getSpendTypePortionMenu(memberId);
+			 getSpendTypePortionMenu(memberId, budget);
 			break;
 		case 3 : 
-			getPeiodDetailSpendMenu(memberId);
+			getPeiodDetailSpendMenu(memberId, budget);
 			break;
 		case 4 : 
-			getMethodDetailSpendMenu(memberId);
+			getMethodDetailSpendMenu(memberId, budget);
 			break;
 		case 0 : 
-			getSpendMainMenu(memberId);
+			getSpendMainMenu(memberId, budget);
 			break;
 		default : 
 			System.out.println("메뉴번호 오류");
@@ -981,7 +995,7 @@ public class IntroMenu {
 	 *  		(1) 지출 항목별 상세 조회
 	 * </pre> 
 	 */
-	public void getTypeDetailSpendMenu(String memberId) {
+	public void getTypeDetailSpendMenu(String memberId, int budget) {
 		printTitle("지출 항목별 상세 조회");
 		
 		System.out.println("\n>> 지출 항목 - 1.식비 2.주거비 3.의류비 4.교통비 5.문화비 6.기타 ");
@@ -992,20 +1006,19 @@ public class IntroMenu {
 		
 		//service.getItemSpend(spendType) 검사 위한 try
 		
-			int sumSpend = service.getTypeSpend(spendType);
+			int sumSpend = service.getTypeSpend(memberId, spendType);
 				if(sumSpend > 0) {
 					System.out.println("[지출 항목]"+spendType+" 총 지출 :" +sumSpend);
+				} else {
+					System.out.println("현재 등록된 지출이 없습니다.");
 				}
-
-			System.out.println("현재 등록된 지출이 없습니다.");
-		
 		
 		System.out.println("\n>> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
 		int no = scanner.nextInt();
 		
 		if(no == 0)
 		{
-			getDetailSpendMenu( memberId);
+			getDetailSpendMenu( memberId, budget);
 		}
 			scanner.close();
 			System.exit(0);
@@ -1019,13 +1032,13 @@ public class IntroMenu {
 	 *  		(2) 기간별 조회
 	 * </pre> 
 	 */
-	public void getPeiodDetailSpendMenu(String memberId) {
+	public void getPeiodDetailSpendMenu(String memberId, int budget) {
 		printTitle("기간별 조회 전체 화면");
 		
-		print("\n▶ 현재 등록된 기간 ["+service.getSpendStartDates()+" ~ "+service.getSpendFinishDates()+"]");
+		print("\n▶ 현재 등록된 기간 ["+service.getSpendStartDates(memberId)+" ~ "+service.getSpendFinishDates(memberId)+"]");
 		
 		System.out.println("\n\n>>날짜는 현재 등록된 기간 내에서만 쓰시길 바랍니다.");
-		System.out.println(">>날짜는 yyyy-MM-dd 형식 지켜주시길 바랍니다.");
+		System.out.println(">>날짜는 yy/MM/dd 형식 지켜주시길 바랍니다.");
 		print("\n▶ 시작 기간 : ");
 		String startDate = scanner.next();
 		
@@ -1034,21 +1047,23 @@ public class IntroMenu {
 		
 		System.out.println("\n \t <<조회>>");
 		
-		
-				service.getDateSpend(startDate, finishDate);
-			
-		
-			System.out.println("");
-		
+		ArrayList<Spend> list = service.getDateSpend(memberId, startDate, finishDate);
+		int count=1;
+		if(list != null) {	
+			for(Spend spend : list) {
+				System.out.print(count++);
+				System.out.println(spend);
+			}
+		} else { 
 			System.out.println("[오류] 현재 등록된 지출이 없거나 기간을 잘못 입력하였습니다.");
-		
+		}
 		
 		System.out.println("\n>> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
 		int no = scanner.nextInt();
 		
 		if(no == 0)
 		{
-			getDetailSpendMenu( memberId);
+			getDetailSpendMenu( memberId, budget);
 		}
 			scanner.close();
 			System.exit(0);
@@ -1062,7 +1077,7 @@ public class IntroMenu {
 	 *  		(3) 지출 수단별 조회 상세 항목 메뉴
 	 * </pre> 
 	 */
-	private void getMethodDetailSpendMenu(String memberId) {
+	private void getMethodDetailSpendMenu(String memberId, int budget) {
 		printTitle("지출 수단별 상세 조회");
 		
 		System.out.println("\n>> 지출 수단 - 1.카드 2.현금 3.이체 4.기타");
@@ -1073,20 +1088,19 @@ public class IntroMenu {
 		
 		//service.getItemSpend(spendType) 검사 위한 try
 		
-			int sumSpend = service.getMethodSpend(spendMethod);
-				if(sumSpend > 0) {
-					System.out.println("[지출 항목]"+spendMethod+" 총 지출 :" +sumSpend);
-				}
-		
-			System.out.println("현재 등록된 지출이 없습니다.");
-		
+			int sumSpend = service.getMethodSpend(memberId, spendMethod);
+			if(sumSpend > 0) {
+				System.out.println("[지출 항목]"+spendMethod+" 총 지출 :" +sumSpend);
+			} else {
+				System.out.println("현재 등록된 지출이 없습니다.");
+			}
 		
 		System.out.println("\n>> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
 		int no = scanner.nextInt();
 		
 		if(no == 0)
 		{
-			getDetailSpendMenu( memberId);
+			getDetailSpendMenu( memberId, budget);
 		}
 			scanner.close();
 			System.exit(0);
@@ -1100,16 +1114,16 @@ public class IntroMenu {
 	 * 		(4) 지출항목별 전체 비율 화면
 	 * </pre> 
 	 */
-	private void getSpendTypePortionMenu(String memberId) {
+	private void getSpendTypePortionMenu(String memberId, int budget) {
 		printTitle("지출항목별 전체 비율 조회");
-		service.getSpendTypePortion();
+		service.getSpendTypePortion(memberId);
 		
 		System.out.println("\n>> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
 		int no = scanner.nextInt();
 		
 		if(no == 0)
 		{
-			getDetailSpendMenu( memberId);
+			getDetailSpendMenu( memberId, budget);
 		}
 			scanner.close();
 			System.exit(0);
@@ -1121,41 +1135,33 @@ public class IntroMenu {
 	 *  3. 지출 내역 삭제
 	 *  </pre>
 	 */
-	private void removeSpendMenu(String memberId) {
+	private void removeSpendMenu(String memberId, int budget) {
 		printTitle("지출 내역 삭제");
+		
+		service.getSpend(memberId);
+		ArrayList<Spend> list = service.getSpend(memberId);
+		int count=1;
+		for(Spend spend : list) {
+			System.out.print(count++);
+			System.out.println(spend);
+		}
+		
 		System.out.println("<"+util.getCurrentDate()+">");
-		System.out.println("\n>> 삭제할 지출은 숫자만 입력하세요.");
-		print("\n▶ 삭제할 지출 : ");
-		int spend = scanner.nextInt();
+		System.out.println("\n>> 삭제할 수입내역 목록 번호를 입력하세요.");
+		print("\n▶ 삭제할 수입 목록 번호 : ");
+		int num = scanner.nextInt();
+		boolean result = service.removeSpend(memberId, num);
 		
-		
-		System.out.println();
-		System.out.println("\n>> 지출 항목 - 1.식비 2.주거비 3.의류비 4.교통비 5.문화비 6.기타 ");
-		System.out.println("지출 항목은 \"문자\"로 입력해주시길 바랍니다.");
-		print("\n▶ 삭제할 지출 항목 : ");
-		String spendType = scanner.next();
-		
-		
-		System.out.println();
-		System.out.println("\n>> 지출 수단 - 1.카드 2.현금 3.이체 4.기타 ");
-		System.out.println("출처는 \"문자\"로 입력해주시길 바랍니다.");
-		print("\n▶ 삭제할 지출 수단 : ");
-		String spendMethod = scanner.next();
-		
-		
-		System.out.println();
-		System.out.println("\n>>날짜는 yyyy-MM-dd 형식 지켜주시길 바랍니다.");
-		print("\n▶ 삭제할 날짜 : ");
-		String date = scanner.next();
-		
-		service.removeSpend(date, spend, spendType, spendMethod);
+		if(result) {
+			System.out.println("해당 내역이 삭제되었습니다.");
+		}
 		
 		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
 		int no = scanner.nextInt();
 		
 		if(no == 0)
 		{
-			spendMainMenu(memberId);
+			spendMainMenu(memberId, budget);
 		}
 			scanner.close();
 			System.exit(0);
@@ -1174,7 +1180,7 @@ public class IntroMenu {
 	 *  3-4.예산 내역 변경
 	 *  </pre>
 	 */
-	private void budgetMainMenu(String memberId) {
+	private void budgetMainMenu(String memberId, int budget) {
 		printTitle("예산 내역 관리 화면");
 		
 		printMenuItem("1.초기 예산 등록");
@@ -1188,16 +1194,16 @@ public class IntroMenu {
 		
 		switch(menuNo) {
 		case 1 : 
-			addBudgetMenu(memberId);
+			addBudgetMenu(memberId, budget);
 			break;
 		case 2 : 
 			getBudgetMenu(memberId);
 			break;
 		case 3 : 
-			removeBudgetMenu(memberId);
+			removeBudgetMenu(memberId, budget);
 			break;
 		case 0 : 
-			mainMenu(memberId);
+			mainMenu(memberId,budget);
 			break;		
 		default : 
 			System.out.println("메뉴번호 오류");
@@ -1214,24 +1220,24 @@ public class IntroMenu {
 	 * 	3-1.초기 예산 등록
 	 * </pre>
 	 */
-	private void addBudgetMenu(String memberId) {
+	private void addBudgetMenu(String memberId, int budget) {
 		printTitle("1.초기 예산 등록");
 		
-		int budget = service.getBudget(memberId);
-		
+		int getbudget = service.getBudget(memberId);
+
 		if(budget == 0) {
 		
 			System.out.print("▶ 예산 입력 :");
-			budget = scanner.nextInt();
+			int addbudget = scanner.nextInt();
 	
-			service.addBudget(memberId,budget);
+			service.addBudget(memberId,addbudget);
 
-			System.out.println("");
+			getbudget =  service.getBudget(memberId);
 			
 		}
 		else {
 			System.out.println(">> 예산 데이터가 이미 등록되어 있습니다. ");
-			System.out.println("▶ 내 예산 : "+service.getBudget(memberId)+"원");
+			System.out.println("▶ 내 예산 : "+getbudget+"원");
 			System.out.println(">> 이미 등록된 상태에서는 예산 조회, 변경, 삭제만 가능합니다.\n");
 		}
 		
@@ -1241,7 +1247,7 @@ public class IntroMenu {
 		
 		if(no == 0)
 		{
-			budgetMainMenu(memberId);
+			budgetMainMenu(memberId, getbudget);
 		}
 			scanner.close();
 			System.exit(0);
@@ -1257,15 +1263,15 @@ public class IntroMenu {
 	private void getBudgetMenu(String memberId) {
 		printTitle("2.현재 예산 조회");
 		
-		int budget = service.getBudget(memberId);
-		System.out.println("▶ 예산 :" + budget+"\n");
+		int budget1 = service.getBudget(memberId);
+		System.out.println("▶ 예산 :" + budget1+"\n");
 		
 		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
 		int no = scanner.nextInt();
 		
 		if(no == 0)
 		{
-			budgetMainMenu(memberId);
+			budgetMainMenu(memberId, budget1);
 		}
 			scanner.close();
 			System.exit(0);
@@ -1279,19 +1285,22 @@ public class IntroMenu {
 	 * 	3-3.전체 예산 삭제
 	 * </pre>
 	 */
-	private void removeBudgetMenu(String memberId) {
+	private void removeBudgetMenu(String memberId, int budget) {
 		printTitle("3.전체 예산 삭제");
 		
 		System.out.println(">> [경고] 예산을 삭제하면 지출과 수입 등 모든 내역이 사라집니다.");
 		System.out.println(">> [경고] 그래도 삭제하겠습니까? 1. 네 2. 아니오");
 		print(">> 번호 입력 : ");
 		int removeNo = scanner.nextInt();
+		int getbudget = budget;
 		
 		if (removeNo == 1) {
 			service.removeBudget(memberId);
 			System.out.println(">> 예산 데이터가 존재하지 않습니다.\n");
+			getbudget=0;
 		} else {
-			System.out.println("▶ 예산 :" + service.getBudget(memberId)+"\n");
+			getbudget = service.getBudget(memberId);
+			System.out.println("▶ 예산 :" +getbudget+"\n");
 			System.out.println("");
 		}
 
@@ -1299,7 +1308,7 @@ public class IntroMenu {
 		int no = scanner.nextInt();
 		
 		if(no == 0) {
-			budgetMainMenu(memberId);
+			budgetMainMenu(memberId, getbudget);
 		}
 			scanner.close();
 			System.exit(0);
@@ -1314,7 +1323,7 @@ public class IntroMenu {
 	 * 	4-2. 비밀번호 변경
 	 * </pre>
 	 */
-	private void myInfoMenu(String memberId) {
+	private void myInfoMenu(String memberId, int budget) {
 		printTitle("내 정보");
 		
 		System.out.println("\t 1.내 정보 조회");
@@ -1330,16 +1339,16 @@ public class IntroMenu {
 		
 		switch(menuNo) {
 			case 1 : 
-				getMyInfoMenu(memberId);
+				getMyInfoMenu(memberId, budget);
 				break;
 			case 2 : 
-				setMyInfoMenu(memberId);
+				setMyInfoMenu(memberId, budget);
 				break;	
 			case 3:
-				setMemberPwMenu(memberId);
+				setMemberPwMenu(memberId, budget);
 				break;
 			case 4:
-				removeMemberMenu(memberId);
+				removeMemberMenu(memberId, budget);
 				break;	
 		}		
 		
@@ -1347,7 +1356,7 @@ public class IntroMenu {
 		int no = scanner.nextInt();
 					
 		if(no == 0) {
-			mainMenu(memberId);
+			mainMenu(memberId, budget);
 		}
 		introMenu();
 		scanner.close();
@@ -1361,7 +1370,7 @@ public class IntroMenu {
 	 * 	4-1. 내 정보 조회
 	 * </pre>
 	 */
-	public void getMyInfoMenu(String memberId) {
+	public void getMyInfoMenu(String memberId, int budget) {
 		
 		printTitle("내정보 조회");
 		System.out.print(memberId+"님");	
@@ -1375,6 +1384,7 @@ public class IntroMenu {
 		Member dto = service.getMember(memberId, memberPw);
 		if(dto != null) {
 			System.out.println(dto);
+			System.out.println(">> 현재 예산 :"+budget);
 		} else {
 			System.out.println("조회 실패 : 회원정보가 존재하지 않습니다.");
 		}
@@ -1383,7 +1393,7 @@ public class IntroMenu {
 		int no = scanner.nextInt();
 			
 		if(no == 0) {
-			mainMenu(memberId);
+			mainMenu(memberId, budget);
 		}
 		
 		introMenu();
@@ -1400,7 +1410,7 @@ public class IntroMenu {
 	 * 	4-2. 내 정보 변경 (아이디/비밀번호 인증 화면)
 	 * </pre>
 	 */
-	private void setMyInfoMenu(String memberId) {
+	private void setMyInfoMenu(String memberId, int budget) {
 		printTitle("내정보 변경");
 		
 		System.out.println(">> "+memberId+"님");
@@ -1412,7 +1422,7 @@ public class IntroMenu {
 			
 		Member dto = service.getMember(memberId, memberPw);
 		if(dto != null) {
-			setMyInfoMenu2(memberId);
+			setMyInfoMenu2(memberId, budget);
 		} else {
 			System.out.println("조회 실패 : 회원정보가 존재하지 않습니다.");
 		}
@@ -1421,7 +1431,7 @@ public class IntroMenu {
 		int no = scanner.nextInt();
 			
 		if(no == 0) {
-			mainMenu(memberId);
+			mainMenu(memberId, budget);
 		}
 		
 		introMenu();
@@ -1441,7 +1451,7 @@ public class IntroMenu {
 	 * 		- 이메일	
 	 * </pre>
 	 */
-	private void setMyInfoMenu2(String memberId) {
+	private void setMyInfoMenu2(String memberId, int budget) {
 		printTitle("내정보 변경");
 		
 		System.out.println("\t 1.휴대폰 변경");
@@ -1455,10 +1465,10 @@ public class IntroMenu {
 		
 		switch(menuNo) {
 			case 1 : 
-				setMyInfoMobileMenu(memberId);
+				setMyInfoMobileMenu(memberId, budget);
 				break;
 			case 2 : 
-				setMyInfoMobileEmail(memberId);
+				setMyInfoMobileEmail(memberId, budget);
 				break;	
 		}		
 		
@@ -1466,7 +1476,7 @@ public class IntroMenu {
 		int no = scanner.nextInt();
 					
 		if(no == 0) {
-			mainMenu(memberId);
+			mainMenu(memberId, budget);
 		}
 		introMenu();
 		scanner.close();
@@ -1483,7 +1493,7 @@ public class IntroMenu {
 	 * </pre>
 	 * @param memberId 아이디
 	 */
-	private void setMyInfoMobileMenu(String memberId) {
+	private void setMyInfoMobileMenu(String memberId, int budget) {
 		printTitle("휴대폰 변경");
 		System.out.println(">> "+memberId+"님");
 //		print("▷ 아이디 : ");
@@ -1505,7 +1515,7 @@ public class IntroMenu {
 				
 			if(no == 0)
 			{
-				mainMenu( memberId);
+				mainMenu( memberId, budget);
 			}
 			
 			introMenu();
@@ -1525,7 +1535,7 @@ public class IntroMenu {
 	 * @param memberId 아이디
 	 */		
 	
-	private void setMyInfoMobileEmail(String memberId) {
+	private void setMyInfoMobileEmail(String memberId, int budget) {
 		printTitle("휴대폰 변경");
 		System.out.println(">> "+memberId+"님");
 //		print("▷ 아이디 : ");
@@ -1547,7 +1557,7 @@ public class IntroMenu {
 				
 			if(no == 0)
 			{
-				mainMenu( memberId);
+				mainMenu( memberId, budget);
 			}
 			
 			introMenu();
@@ -1565,7 +1575,7 @@ public class IntroMenu {
 	 * 	4-3. 비밀번호 변경
 	 * </pre>
 	 */
-	public void setMemberPwMenu (String memberId)  {
+	public void setMemberPwMenu (String memberId, int budget)  {
 		printTitle("비밀번호 변경");
 		System.out.println(">> "+memberId+"님");
 //		print("▷ 아이디 : ");
@@ -1591,7 +1601,7 @@ public class IntroMenu {
 				
 			if(no == 0)
 			{
-				mainMenu( memberId);
+				mainMenu( memberId, budget);
 			}
 			
 			introMenu();
@@ -1608,7 +1618,7 @@ public class IntroMenu {
 	 * 	4-4. 회원 탈퇴
 	 * </pre>
 	 */
-	private void removeMemberMenu(String memberId) {
+	private void removeMemberMenu(String memberId, int budget) {
 		printTitle("회원 탈퇴");
 		System.out.println(">>[경고] 회원 탈퇴를 하면 계정이 복구가 안됩니다.");
 		System.out.println(">> 회원탈퇴를 하시겠습니까? \n 예 - 1, 아니오 - 그 외 번호를 입력바랍니다. ");
@@ -1626,7 +1636,7 @@ public class IntroMenu {
 		int no = scanner.nextInt();
 				
 		if(no == 0) {
-			mainMenu(memberId);
+			mainMenu(memberId, budget);
 		}
 		introMenu();
 				

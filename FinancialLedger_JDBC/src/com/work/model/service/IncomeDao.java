@@ -130,18 +130,17 @@ public class IncomeDao {
 	 * @param num
 	 * @return
 	 */
-	public boolean removeIncome(String memberId, int num) {
+	public boolean removeIncome(String memberId) {
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		
 		try {
 			conn = factory.getConnection();
 	
-			String sql = "delete income where memberId = ? and rownum=?";
+			String sql = "delete income where memberId = ?";
 		
 			stmt = conn.prepareStatement(sql);
 			stmt.setString(1,memberId);
-			stmt.setInt(2,num);
 			
 			int rows = stmt.executeUpdate();
 			
@@ -183,7 +182,7 @@ public class IncomeDao {
 		//1,2. driver로딩 ,db서버 연결
 		conn = factory.getConnection();
 		
-		String sql = "select sum(income) from income where memberid =? and sources=? group by income";
+		String sql = "select sum(income) from income where memberid =? and sources=?";
 		
 		//3. 연결된 서버와 통로 개설 
 		stmt = conn.prepareStatement(sql);
@@ -265,7 +264,12 @@ public class IncomeDao {
 		
 		return null;
 	}
-
+	
+	/**
+	 * 
+	 * @param memberId
+	 * @return
+	 */
 	public String getIncomeFinishDates(String memberId) {
 		/** Connection DB 서버 연결 */
 		Connection conn = null;
@@ -311,7 +315,14 @@ public class IncomeDao {
 		
 		return null;
 	}
-
+	
+	/**
+	 * 상세조회 1. 기간별 조회 
+	 * @param memberId 아이디
+	 * @param startDate 시작날짜
+	 * @param finishDate 끝날짜
+	 * @return
+	 */
 	public ArrayList<Income> getDateIncome(String memberId, String startDate, String finishDate) {
 		ArrayList<Income> incomes = new ArrayList<Income>();
 		Connection conn = null;
@@ -357,6 +368,55 @@ public class IncomeDao {
 				factory.close(conn, stmt, rs);
 			}
 			return incomes;
+			
+			
+	}
+
+	public static int getIncome(String memberId, int num) {
+		/** Connection DB 서버 연결 */
+		Connection conn = null;
+		
+		/** PreparedStatement 연결된 서버와 통로 개설 */
+		PreparedStatement stmt = null;
+		
+		/** ResultSet 실행결과 처리*/
+		ResultSet rs = null;
+		
+		try {
+			
+		//1,2. driver로딩 ,db서버 연결
+		conn = factory.getConnection();
+		
+		String sql = "select income from income where memberId = ? and rownum=?";
+		
+		//3. 연결된 서버와 통로 개설 
+		stmt = conn.prepareStatement(sql);
+		
+		//3.
+		stmt.setString(1, memberId);
+		stmt.setInt(2, num);
+		
+		//4. 통로이용 sql 실행 요청 ; 역할
+		rs = stmt.executeQuery();
+		
+		//5. 실행 결과 처리
+		if(rs.next()) {
+			int incomedates = rs.getInt(1);
+			return incomedates;
+					
+		}
+		
+		
+		} catch (SQLException e) {
+			System.out.println("[오류] 수입 조회");
+			e.printStackTrace();
+			
+		} finally {
+			
+			factory.close(conn, stmt, rs);
+		}
+		
+		return 0;
 	}
 	
 	

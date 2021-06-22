@@ -12,6 +12,7 @@ import com.work.exception.RecordNotFoundException;
 import com.work.model.dto.Budget;
 import com.work.model.dto.Income;
 import com.work.model.dto.Member;
+import com.work.model.dto.Spend;
 import com.work.util.Utility;
 
 /**
@@ -39,7 +40,7 @@ public class ManagementService {
 	MemberDao memberDao = MemberDao.getInstance();
 	BudgetDao budgetDao = BudgetDao.getInstance();
 	IncomeDao incomeDao = IncomeDao.getInstance();
-	SpendDao spendtDao = SpendDao.getInstance();
+	SpendDao spendDao = SpendDao.getInstance();
 
 	
 	/** 기본 생성자 */
@@ -75,9 +76,9 @@ public class ManagementService {
 	 * 로그인
 	 * @param memberId 아이디
 	 * @param memberPw 비밀번호
-	 * @return 성공시 true, 실패하면 false
+	 * @return 성공시 budget반환, 실패시 0
 	 */
-	public boolean login(String memberId, String memberPw) {
+	public int login(String memberId, String memberPw) {
 		return memberDao.login(memberId, memberPw);
 	}
 	
@@ -220,7 +221,7 @@ public class ManagementService {
 	 * @return 등록되면 true, 아니면 false
 	 */
 	public boolean addIncome(String memberId, int revenue, String source) {
-			return incomeDao.addIncome(memberId,revenue,source);
+		return incomeDao.addIncome(memberId,revenue,source);
 	}
 	
 
@@ -230,8 +231,8 @@ public class ManagementService {
 	 * @param revenue 수입
 	 * @param source 수입 출처
 	 */
-	public boolean removeIncome(String memberId, int num) {
-			return incomeDao.removeIncome(memberId, num);
+	public boolean removeIncome(String memberId) {
+			return incomeDao.removeIncome(memberId);
 	}
 	
 
@@ -246,9 +247,9 @@ public class ManagementService {
 	
 	/**
 	 * 상세조회 1. 기간별 조회 
-	 * @param memberId
-	 * @param startDate
-	 * @param finishDate
+	 * @param memberId 아이디
+	 * @param startDate 시작날짜
+	 * @param finishDate 끝날짜
 	 */
 	public ArrayList<Income> getDateIncome(String memberId, String startDate, String finishDate) {
 		return incomeDao.getDateIncome(memberId, startDate, finishDate);
@@ -344,7 +345,9 @@ public class ManagementService {
 		System.out.println("    " + etc + "원");
 	}
 	
-	
+	public int getIncome(String memberId, int num) {
+		return IncomeDao.getIncome(memberId, num);
+	}
 	
 	//예산 내역 관리 메서드들
 	
@@ -378,7 +381,15 @@ public class ManagementService {
 	public boolean removeBudget(String memberId) {
 		return budgetDao.removeBudget(memberId);
 	}
-		
+	
+	/**
+	 * 전체 수정 메서드
+	 * @param memberId 아이디
+	 * @return 삭제되면 true이고, 아니면 false
+	 */
+	public boolean updateBudget(String memberId, int money) {
+		return budgetDao.updateBudget(memberId,money);
+	}
 		
 		//지출 메서드
 		
@@ -389,36 +400,21 @@ public class ManagementService {
 		 * @param spendType 지출 항목
 		 * @param spendMethod 결제 수단
 		 * @return 현재 아이디가 존재하고 지출이 등록되면 true, 아니면 false
-		 * @throws CommonException
 		 */
-		public boolean addSpend(String currentDate, int spend, String spendType, String spendMethod) {
-			return false;
+		public boolean addSpend(String memberId, int spend, String spendType, String spendMethod) {
+			return spendDao.addSpend(memberId, spend, spendType, spendMethod);
 			
 		}
 		
-		
-		/**
-		 * 지출 등록 메서드 - 초기화용, 테스트용
-		 * @param dto 객체 
-		 * @param currentDate 현재 날짜
-		 * @param spend 지출
-		 * @param spendType 지출항목
-		 * @param spendMethod 결제수간
-		 * @return 현재 아이디가 존재하고 지출이 등록되면 true, 아니면 false
-		 * @throws CommonException
-		 */
-		public boolean addSpend(Member dto, String currentDate, int spend, String spendType, String spendMethod) {
-			return false;
-			
-		}
 		
 		/**
 		 * 지출 전체 조회 메서드
 		 */
-		public void getSpend() {
-			
+		public ArrayList<Spend> getSpend(String memberId) {
+			return spendDao.getSpend(memberId);
 			
 		}
+
 
 		/**
 		 * 지출 항목 상세 조회 메서드
@@ -426,8 +422,8 @@ public class ManagementService {
 		 * @return 지출 항목에 해당되는 값들 더하여서 sumTypeSpend 반환
 		 * @throws RecordNotFoundException
 		 */
-		public int getTypeSpend(String spendType) {
-				return 0;
+		public int getTypeSpend(String memberId, String spendType) {
+				return spendDao.getTypeSpend(memberId, spendType);
 			}
 
 		
@@ -435,16 +431,16 @@ public class ManagementService {
 		 * 지출 시작날짜 불러오는 메서드
 		 * @return 지출 시작날짜
 		 */
-		public String getSpendStartDates() {
-			return null;
+		public String getSpendStartDates(String memberId) {
+			return spendDao.getSpendStartDates(memberId);
 		}
 
 		/**
 		 * 지출 끝날짜 불러오는 메서드
 		 * @return
 		 */
-		public String getSpendFinishDates() {
-			return null;
+		public String getSpendFinishDates(String memberId) {
+			return spendDao.getSpendFinishDates(memberId);
 		}
 		
 		
@@ -454,8 +450,8 @@ public class ManagementService {
 		 * @param finishDate 끝 날짜
 		 * @throws RecordNotFoundException
 		 */
-		public void getDateSpend(String startDate, String finishDate) {
-			
+		public ArrayList<Spend> getDateSpend(String memberId,String startDate, String finishDate) {
+			return spendDao.getDateSpend( memberId,  startDate,  finishDate);
 		}
 		
 		/**
@@ -464,8 +460,8 @@ public class ManagementService {
 		 * @return 사용자가 선택한 결제수단의 지출 총 합
 		 * @throws RecordNotFoundException
 		 */
-		public int getMethodSpend(String spendMethod) {
-			return 0;
+		public int getMethodSpend(String memberId, String spendMethod) {
+			return spendDao.getMethodSpend(memberId, spendMethod);
 		}
 
 		/**
@@ -474,18 +470,106 @@ public class ManagementService {
 		 * @param spend 지출
 		 * @param spendType 지출 항목
 		 * @param spendMethod 결제 수단
+		 * @return 
 		 */
-		public void removeSpend(String date, int spend, String spendType, String spendMethod) {
-			
-			
+		public boolean removeSpend(String memberId, int num) {
+			return spendDao.removeSpend(memberId, num);
 		}
 
 		/**
 		 * 전체 지출 항목별 비율 조회 메서드 - 지출 항목 : 1.식비 2.주거비 3.의류비 4.교통비 5.문화비 6.기타
 		 */
-		public void getSpendTypePortion() {
+		public void getSpendTypePortion(String memberId) {
+			// 돈 넣을 변수
+			int foodExpenses = 0;
+			int houseExpenses = 0;
+			int clothingCost = 0;
+			int transportationFee = 0;
+			int culturalCost = 0;
+			int etc = 0;
+			
+			int sumSpend = 0;
+			
+			int width =20;
+			
+				 
+			foodExpenses = spendDao.getTypeSpend(memberId, "식비");
+			houseExpenses = spendDao.getTypeSpend(memberId, "주거비");
+			clothingCost = spendDao.getTypeSpend(memberId, "의류비");
+			transportationFee = spendDao.getTypeSpend(memberId, "교통비");
+			culturalCost = spendDao.getTypeSpend(memberId, "문화비");
+			etc = spendDao.getTypeSpend(memberId, "기타");
+					
+			
+			sumSpend = foodExpenses+houseExpenses+clothingCost+transportationFee+culturalCost+etc;
+			
+			//비율 계산
+			double foodExpensesPortion = (double)foodExpenses/(double)sumSpend*100;
+			double houseExpensesPortion = (double)houseExpenses/(double)sumSpend*100;
+			double clothingCostPortion = (double)clothingCost/(double)sumSpend*100;
+			double transportationFeePortion = (double)transportationFee/(double)sumSpend*100;
+			double culturalCostPortion = (double)culturalCost/(double)sumSpend*100;
+			double etcPortion = (double)etc/(double)sumSpend*100;
+			
+			System.out.print(">> [총 지출] :"+sumSpend+"원\n");
+			
+			System.out.print(" [식비] ");
+			//식비 비율만큼 ■ 프린트 
+			for (int i = 0; i < foodExpensesPortion*width/100 ; i++ ) {
+				System.out.print("■");
+			}
+			System.out.print(" "+(int)foodExpensesPortion+"%");
+			System.out.println("\t"+foodExpenses+"원");
 			
 			
+			System.out.print("[주거비] ");
+			//주거비 비율만큼 □ 프린트 
+			for (int i = 0; i < houseExpensesPortion*width/100 ; i++ ) {
+				System.out.print("□");
+			}
+			System.out.print(" " + (int)houseExpensesPortion + "%");
+			System.out.println("\t" + houseExpenses+"원");
+			
+			
+			System.out.print("[의류비] ");
+			//의류비 비율만큼 ■ 프린트 
+			for (int i = 0; i < clothingCostPortion*width/100 ; i++ ) {
+				System.out.print("■");
+			}
+			System.out.print(" " + (int)clothingCostPortion + "%");
+			System.out.println("\t" + clothingCost + "원");
+			
+			System.out.print("[교통비] ");
+			//교통비 비율만큼 □ 프린트 
+			for (int i = 0; i < transportationFeePortion*width/100 ; i++ ) {
+				System.out.print("□");
+			}
+			System.out.print(" " + (int)transportationFeePortion + "%");
+			System.out.println("\t" + transportationFee + "원");
+			
+			System.out.print("[문화비] ");
+			//문화비 비율만큼 ■ 프린트 
+			for (int i = 0; i < culturalCostPortion*width/100 ; i++ ) {
+				System.out.print("■");
+			}
+			System.out.print(" " + (int)culturalCostPortion + "%");
+			System.out.println("\t" + culturalCost + "원");
+			
+			
+			System.out.print(" [기타] ");
+			//기타 비율만큼 □ 프린트 
+			for (int i = 0; i < transportationFeePortion*width/100 ; i++ ) {
+				System.out.print("□");
+			}
+			System.out.print(" "+(int)etcPortion+"%");
+			System.out.println("\t" + etc + "원");
+			
+		}
+
+
+
+		public int getSpend(String memberId, int num) {
+			return spendDao.getSpend(memberId,num);
 		}
 
 

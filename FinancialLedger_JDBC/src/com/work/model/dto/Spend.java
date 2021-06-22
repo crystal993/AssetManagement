@@ -172,7 +172,7 @@ public class Spend {
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		
-		builder.append("[날짜 : ");
+		builder.append(". 날짜 : ");
 		builder.append(spendDates);
 		builder.append(", 지출 :");
 		builder.append(spend);
@@ -180,7 +180,6 @@ public class Spend {
 		builder.append(spendType);
 		builder.append(", 지출 수단 : ");
 		builder.append(spendMethod);
-		builder.append("]");
 		builder.append("\n");
 		return builder.toString();
 	}
