@@ -19,23 +19,24 @@ import com.work.util.Utility;
  * 회원 DAO 클래스
  * 
  * ## DAO Pattern
- * -- C
- * -- R
- * -- U
- * -- D
+ * - 회원가입
  * 
- * ## JDBC driver 순서
-1. jdbc driver 로딩 : 생성자에서 수행
-		=> api보고 하기
-		=> 객체를 생성해서 메모리에 올린다는 의미.
-		
-		생성자의 역할 1. 초기화 2. 서비스를 제공하기 전에 선행 처리 되어야할 것도 넣기
-	
-	2. db 서버연결 : url, user, password  => Connection
-	3. 연결된 서버와 통로 개설 => Statement, PreparedStatement, CallableStatement
-	4. 통로이용 sql 실행 요청
-	5. 실행결과 처리
-	6. 자원해제
+ * - 로그인
+ * 
+ * - 아이디 찾기1 - 휴대폰 
+ * - 아이디 찾기2 - 이메일
+ * 
+ * - 비밀번호 찾기1 - 휴대폰 
+ * - 비밀번호 찾기2- 이메일
+ * 
+ * - 내 정보 조회 
+ * - 내 정보 변경1 - 휴대폰 변경
+ * - 내 정보 변경2 - 이메일 변경
+ * - 내 정보 변경3 - 비밀번호 변경
+ * 
+ * - 회원 탈퇴
+ * 
+ * - 전체 회원 수 조회 
  * </pre>
  * @author 김수정
  * @version ver.1.0
@@ -494,13 +495,84 @@ public class MemberDao {
 		return null;
 	}
 	
-		
 	/**
-	 * 회원 전체 변경
-	 * @param dto 회원
-	 * @throws RecordNotFoundException 
+	 * 내 정보 변경 - 휴대폰
+	 * @param mobile 휴대폰
+	 * @return 변경되면 true, 아니면 false
+	 */	
+	public boolean setMemberMobile(String memberId, String mobile) {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		
+		// 1. 드라이버 로딩, db 서버와 연결
+		conn = factory.getConnection();
+		
+		try {
+			// 2. 통로 생성 , 서버와 통로 연결
+			String sql = "update member set mobile=? where memberId = ?";
+			stmt = conn.prepareStatement(sql);
+			stmt.setString(1,mobile);
+			stmt.setString(2,memberId);
+			
+			//3. sql구문 실행 요청, 통로 이용
+			// c u d => stmt.executeUpdate()
+			int rows = stmt.executeUpdate();
+
+			
+			if(rows > 0) {
+				return true;
+			}
+			
+		} catch (SQLException e) {
+			System.out.println("[오류] 내 정보 변경");
+			e.printStackTrace();
+		} finally {
+			
+			//6. 자원해제 : finally 구문으로 변경 수정
+			// 공장에게 위임
+			factory.close(conn, stmt);
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * 내 정보 변경 - 이메일
+	 * @param email 이메일
+	 * @return 변경되면 true, 아니면 false
 	 */
-	public boolean setMembers(Member dto) {
+	public boolean setMemberEmail(String memberId, String email) {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		
+		// 1. 드라이버 로딩, db 서버와 연결
+		conn = factory.getConnection();
+		
+		try {
+			// 2. 통로 생성 , 서버와 통로 연결
+			String sql = "update member set email = ? where memberId = ?";
+			stmt = conn.prepareStatement(sql);
+			stmt.setString(1, email);
+			stmt.setString(2, memberId);
+			
+			//3. sql구문 실행 요청, 통로 이용
+			// c u d => stmt.executeUpdate()
+			int rows = stmt.executeUpdate();
+			
+			if(rows > 0) {
+				return true;
+			}
+			
+		} catch (SQLException e) {
+			System.out.println("[오류] 내 정보 변경");
+			e.printStackTrace();
+		} finally {
+			
+			//6. 자원해제 : finally 구문으로 변경 수정
+			// 공장에게 위임
+			factory.close(conn, stmt);
+		}
+		
 		return false;
 	}
 	
@@ -510,7 +582,6 @@ public class MemberDao {
 	 * @param memberPw 비밀번호
 	 * @param modifyMemberPw 바꿀 비밀번호
 	 * @return 아이디와 비밀번호가 존재하면 true, 아니면 오류 
-	 * @throws RecordNotFoundException 
 	 */
 	public boolean setMemberPw(String memberId, String memberPw, String modifyMemberPw) {
 		Connection conn = null;
@@ -538,6 +609,11 @@ public class MemberDao {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+			
+			//6. 자원해제 : finally 구문으로 변경 수정
+			// 공장에게 위임
+			factory.close(conn, stmt);
 		}
 		
 		return false;
@@ -585,6 +661,11 @@ public class MemberDao {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+			
+			//6. 자원해제 : finally 구문으로 변경 수정
+			// 공장에게 위임
+			factory.close(conn, stmt, rs);
 		}
 		
 		

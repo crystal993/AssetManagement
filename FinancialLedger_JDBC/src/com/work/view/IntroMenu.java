@@ -1311,7 +1311,9 @@ public class IntroMenu {
 		printTitle("내 정보");
 		
 		System.out.println("\t 1.내 정보 조회");
-		System.out.println("\t 2.비밀번호 변경");
+		System.out.println("\t 2.내 정보 변경");
+		System.out.println("\t 3.비밀번호 변경");
+		System.out.println("\t 4.회원 탈퇴");
 		
 		System.out.println(">> 번호를 입력바랍니다.");
 		print("▷ 메뉴 번호 : ");
@@ -1323,14 +1325,29 @@ public class IntroMenu {
 			case 1 : 
 				getMyInfoMenu();
 				break;
-			case 2:
+			case 2 : 
+				setMyInfoMenu();
+				break;	
+			case 3:
 				setMemberPwMenu();
 				break;
-				
+			case 4:
+				setMemberPwMenu();
+				break;	
+		}		
+		
+		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
+		int no = scanner.nextInt();
+					
+		if(no == 0) {
+			mainMenu();
 		}
+		introMenu();
 		scanner.close();
 	}
 	
+
+
 	/**
 	 * <pre>
 	 * <2>메인 화면
@@ -1371,9 +1388,108 @@ public class IntroMenu {
 	
 	/**
 	 * <pre>
+	 * <2> 메인 화면
+	 * 4. 내 정보 메뉴
+	 * 	4-2. 내 정보 변경 (아이디/비밀번호 인증 화면)
+	 * </pre>
+	 */
+	private void setMyInfoMenu() {
+		printTitle("내정보 변경");
+		
+		System.out.print("▶ 아이디 : ");
+		String memberId = scanner.next();
+			
+		System.out.print("▶ 비밀번호 : ");
+		String memberPw = scanner.next();
+			
+		Member dto = service.getMember(memberId, memberPw);
+		if(dto != null) {
+			setMyInfoMenu2(memberId);
+		} else {
+			System.out.println("조회 실패 : 회원정보가 존재하지 않습니다.");
+		}
+			
+		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
+		int no = scanner.nextInt();
+			
+		if(no == 0) {
+			mainMenu();
+		}
+		
+		introMenu();
+		
+		System.out.println("[오류] 존재하지 않는 회원입니다.");
+		
+		scanner.close();
+		
+	}
+	
+	/**
+	 * <pre>
+	 * <2> 메인 화면
+	 * 4. 내 정보 메뉴
+	 * 	4-2. 내 정보 변경
+	 * 		- 휴대폰
+	 * 		- 이메일	
+	 * </pre>
+	 */
+	private void setMyInfoMenu2(String memberId) {
+		printTitle("내정보 변경");
+		
+		System.out.println("\t 1.휴대폰 변경");
+		System.out.println("\t 2.이메일 변경");
+		
+		System.out.println(">> 번호를 입력바랍니다.");
+		print("▷ 메뉴 번호 : ");
+		int menuNo = scanner.nextInt();
+		
+		System.out.println("");
+		
+		switch(menuNo) {
+			case 1 : 
+				System.out.println(">> 새로운 휴대폰 번호를 입력하세요.");
+				print("▷ 휴대폰 : ");
+				String mobile = scanner.next();
+				
+				boolean result = service.setMemberMobile(memberId, mobile);
+				if(result) {
+					System.out.println("휴대폰이 변경되었습니다.");
+				} else {
+					System.out.println("[오류]휴대폰 변경");
+				}		
+					
+				break;
+			case 2 : 
+				System.out.println(">>>> 새로운 이메일을 입력하세요.");
+				print("▷ 이메일 : ");
+				String email = scanner.next();
+				
+				boolean result2 = service.setMemberEmail(memberId, email);
+				if(result2) {
+					System.out.println("이메일이 변경되었습니다.");
+				} else {
+					System.out.println("[오류]이메일 변경");
+				}		
+					
+				break;	
+		}		
+		
+		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
+		int no = scanner.nextInt();
+					
+		if(no == 0) {
+			mainMenu();
+		}
+		introMenu();
+		scanner.close();
+		
+	}
+
+	/**
+	 * <pre>
 	 * <2>메인 화면
 	 * 4.내 정보 메뉴
-	 * 	4-2. 비밀번호 변경
+	 * 	4-3. 비밀번호 변경
 	 * </pre>
 	 */
 	public void setMemberPwMenu ()  {

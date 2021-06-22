@@ -151,14 +151,23 @@ public class ManagementService {
 			return memberDao.getMember(memberId, memberPw);
 	}
 		
-	
 	/**
-	 * 회원 전체 변경
-	 * @param dto 회원
-	 * @throws RecordNotFoundException 
+	 * 내 정보 변경 - 휴대폰
+	 * @param mobile 휴대폰
+	 * @return
 	 */
-	public boolean setMembers(Member dto) {
-		return false;
+	public boolean setMemberMobile(String memberId, String mobile) {
+		return memberDao.setMemberMobile(memberId, mobile);
+	}
+
+
+	/**
+	 * 내 정보 변경 - 이메일
+	 * @param email 이메일
+	 * @return
+	 */
+	public boolean setMemberEmail(String memberId, String email) {
+		return memberDao.setMemberEmail(memberId, email);
 	}
 	
 	/**
@@ -440,4 +449,6 @@ public class ManagementService {
 			
 			
 		}
+
+
 }
