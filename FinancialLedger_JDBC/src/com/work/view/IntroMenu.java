@@ -325,17 +325,22 @@ public class IntroMenu {
 		print("▷ 아이디 : ");
 		String memberId = scanner.next();
 		
+		System.out.println(">> 이름을 입력바랍니다.");
+		print("▷ 이름 : ");
+		String name = scanner.next();
+		
 		System.out.println(">> 휴대폰 번호를 입력바랍니다.");
 		print("▷ 휴대폰 : ");
 		String mobile = scanner.next();
 		
-		try {
-			String tempMemberPw = service.findPw(memberId, mobile);
+		String tempMemberPw = service.findMemerPwByMobile(memberId, name, mobile);
+		if(tempMemberPw != null) {
 			System.out.println("▶ 임시 비밀번호 "+tempMemberPw+ "가 발급되었습니다. \n로그인 후 변경 바랍니다.");
 			introMenu();
-		} catch (CommonException e) {
+		} else {
 			System.out.println("존재하지 않거나 잘못 입력된 번호입니다.");
 		}
+		
 		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
 		int no = scanner.nextInt();
 		
@@ -362,18 +367,25 @@ public class IntroMenu {
 		print("▷ 아이디 : ");
 		String memberId = scanner.next();
 		
+		System.out.println(">> 이름을 입력바랍니다.");
+		print("▷ 이름 : ");
+		String name = scanner.next();
+		
 		System.out.println(">> 이메일을 입력바랍니다.");
 		print("▷ 이메일 : ");
 		String email = scanner.next();
 		
-		try {
-			String tempMemberPw = service.findPw(memberId, email);
+		String tempMemberPw = service.findMemerPwByEmail(memberId, name, email);
+		
+		if(tempMemberPw != null) {
 			System.out.println("▶ 임시 비밀번호 "+tempMemberPw+ "가 발급되었습니다. \n로그인 후 변경 바랍니다.");
 			introMenu();
-		} catch (CommonException e) {
+		} else {
 			System.out.println("존재하지 않거나 잘못 입력된 번호입니다.");
-		}
+		}	
+		
 		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
+		
 		int no = scanner.nextInt();
 		
 		if(no == 0)
@@ -495,12 +507,12 @@ public class IntroMenu {
 		print("\n▶ 출처 : ");
 		String source = scanner.next();
 		
-		try {
+	
 			service.addIncome(util.getCurrentDate(), revenue, source);
-		} catch (CommonException | IndexOutOfBoundsException e) {
+	
 			// TODO Auto-generated catch block
 			System.out.println("수입 내역이 존재하지 않습니다.");
-		}
+		
 		
 		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
 		int no = scanner.nextInt();
@@ -669,7 +681,7 @@ public class IntroMenu {
 		String source = scanner.next();
 		
 		//service.getItemIncome(source) 검사 위한 try
-		try {
+	
 			int sumIncome = service.getItemIncome(source);
 				if(sumIncome > 0) {
 					System.out.println("[수입 출처]"+source+" 총 수입 :" +sumIncome);
@@ -677,9 +689,9 @@ public class IntroMenu {
 				else {
 					System.out.println("현재 등록된 수입이 없습니다.");
 				}
-		} catch (RecordNotFoundException | IndexOutOfBoundsException e) {
+	
 			System.out.println("현재 등록된 수입이 없습니다.");
-		}
+		
 		
 		System.out.println("\n>> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
 		int no = scanner.nextInt();
@@ -736,15 +748,15 @@ public class IntroMenu {
 		
 		System.out.println("\n \t <<조회>>");
 		
-		try {
+		
 				service.getDateIncome(startDate, finishDate);
 			
-		} catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+		
 			System.out.println();
-		}
-		catch (RecordNotFoundException e) {
+		
+		
 			System.out.println("[오류] 현재 등록된 수입이 없거나 기간을 잘못 입력하였습니다.");
-		}
+		
 		
 		System.out.println("\n>> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
 		int no = scanner.nextInt();
@@ -822,12 +834,12 @@ public class IntroMenu {
 		print("\n▶ 결제 수단 : ");
 		String spendMethod = scanner.next();
 		
-		try {
+	
 			service.addSpend(util.getCurrentDate(), spend, spendType, spendMethod);
-		} catch (CommonException | IndexOutOfBoundsException e) {
+			
 			// TODO Auto-generated catch block
 			System.out.println("지출 내역이 존재하지 않습니다.");
-		}
+		
 		
 		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
 		int no = scanner.nextInt();
@@ -967,14 +979,14 @@ public class IntroMenu {
 		String spendType = scanner.next();
 		
 		//service.getItemSpend(spendType) 검사 위한 try
-		try {
+		
 			int sumSpend = service.getTypeSpend(spendType);
 				if(sumSpend > 0) {
 					System.out.println("[지출 항목]"+spendType+" 총 지출 :" +sumSpend);
 				}
-		} catch (RecordNotFoundException | IndexOutOfBoundsException e) {
+
 			System.out.println("현재 등록된 지출이 없습니다.");
-		}
+		
 		
 		System.out.println("\n>> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
 		int no = scanner.nextInt();
@@ -1010,14 +1022,14 @@ public class IntroMenu {
 		
 		System.out.println("\n \t <<조회>>");
 		
-		try {
+		
 				service.getDateSpend(startDate, finishDate);
 			
-		} catch ( NumberFormatException | ArrayIndexOutOfBoundsException e) {
+		
 			System.out.println("");
-		} catch (RecordNotFoundException | IndexOutOfBoundsException e) {
+		
 			System.out.println("[오류] 현재 등록된 지출이 없거나 기간을 잘못 입력하였습니다.");
-		}
+		
 		
 		System.out.println("\n>> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
 		int no = scanner.nextInt();
@@ -1048,14 +1060,14 @@ public class IntroMenu {
 		String spendMethod = scanner.next();
 		
 		//service.getItemSpend(spendType) 검사 위한 try
-		try {
+		
 			int sumSpend = service.getMethodSpend(spendMethod);
 				if(sumSpend > 0) {
 					System.out.println("[지출 항목]"+spendMethod+" 총 지출 :" +sumSpend);
 				}
-		} catch (RecordNotFoundException | IndexOutOfBoundsException e) {
+		
 			System.out.println("현재 등록된 지출이 없습니다.");
-		}
+		
 		
 		System.out.println("\n>> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
 		int no = scanner.nextInt();
@@ -1266,21 +1278,20 @@ public class IntroMenu {
 		
 		if (removeNo == 1)
 		{
-			try {
+			
 				service.removeBudget();
-			} catch (RecordNotFoundException e) {
-				System.out.println(">> 예산 데이터가 존재하지 않습니다.\n");
-			}
-			System.out.println("▶ 예산 :" + service.getBudget()+"\n");
-		} else {
-			System.out.println("");
-		}
 		
+				System.out.println(">> 예산 데이터가 존재하지 않습니다.\n");
+			
+			System.out.println("▶ 예산 :" + service.getBudget()+"\n");
+		
+			System.out.println("");
+		
+		}
 		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
 		int no = scanner.nextInt();
 		
-		if(no == 0)
-		{
+		if(no == 0) {
 			budgetMainMenu();
 		}
 			scanner.close();
@@ -1329,31 +1340,31 @@ public class IntroMenu {
 	 */
 	public void getMyInfoMenu() {
 		
-			printTitle("내정보 조회");
+		printTitle("내정보 조회");
 			
-			System.out.print("▶ 아이디 : ");
-			String memberId = scanner.next();
+		System.out.print("▶ 아이디 : ");
+		String memberId = scanner.next();
 			
-			System.out.print("▶ 비밀번호 : ");
-			String memberPw = scanner.next();
+		System.out.print("▶ 비밀번호 : ");
+		String memberPw = scanner.next();
 			
-			Member dto = service.getMember(memberId, memberPw);
-			if(dto != null) {
-				System.out.println(dto);
-			} else {
-				System.out.println("조회 실패 : 회원정보가 존재하지 않습니다.");
-			}
+		Member dto = service.getMember(memberId, memberPw);
+		if(dto != null) {
+			System.out.println(dto);
+		} else {
+			System.out.println("조회 실패 : 회원정보가 존재하지 않습니다.");
+		}
 			
-			System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
-			int no = scanner.nextInt();
+		System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
+		int no = scanner.nextInt();
 			
-			if(no == 0)
-			{
-				mainMenu();
-			}
-				introMenu();
+		if(no == 0) {
+			mainMenu();
+		}
 		
-			System.out.println("[오류] 존재하지 않는 회원입니다.");
+		introMenu();
+		
+		System.out.println("[오류] 존재하지 않는 회원입니다.");
 		
 		scanner.close();
 	}
@@ -1379,24 +1390,25 @@ public class IntroMenu {
 		print("▷ 변경 비밀번호 : ");
 		String modifyMemberPw = scanner.next();
 		
-		try {
-			boolean result = service.setMemberPw(memberId,memberPw,modifyMemberPw);
-			if(result) {
-				System.out.println("비밀번호가 변경되었습니다.");
-				
-				System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
-				int no = scanner.nextInt();
-				
-				if(no == 0)
-				{
-					mainMenu();
-				}
-					introMenu();
-				
-			}
-		} catch (RecordNotFoundException e) {
+	
+		boolean result = service.setMemberPw(memberId,memberPw,modifyMemberPw);
+		if(result) {
+			System.out.println("비밀번호가 변경되었습니다.");
+		} else {
 			System.out.println("[오류] 존재하지 않는 아이디 혹은 비밀번호입니다.");
-		}
+		}		
+			System.out.println(">> 이전 메뉴로 돌아가려면 0번을 눌러주세요.");
+			int no = scanner.nextInt();
+				
+			if(no == 0)
+			{
+				mainMenu();
+			}
+			
+			introMenu();
+				
+		
+		
 		scanner.close();
 	}
 	

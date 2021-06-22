@@ -94,24 +94,50 @@ public class ManagementService {
 		return memberDao.findId2(email);
 	}	
 	
+	
 	/**
-	 * 비밀번호 찾기
-	 * @param memberId 아이디
+	 * 비밀번호 찾기1 - 휴대폰
+	 * @param member_id 아이디 
+	 * @param name 이름 
 	 * @param mobile 휴대폰
-	 * @return 아이디와 휴대폰 번호가 맞으면(true) 임시 비밀번호를 기존 비밀번호에 업데이트 후 반환, false이면 오류메세지
+	 * @return 아이디
 	 */
-	public String findPw(String memberId, String mobile) {
-		Utility util = new Utility();
-//		
-//		
-//		int index = exist(memberId);
-//			if(members.get(index).getMobile().equals(mobile)) {
-//				String tempMemberPw =  util.getSecureAlphabetString(8, false, true);
-//				members.get(index).setMemberPw(tempMemberPw);
-//				return tempMemberPw;
-//			}
-//		
-//		throw new CommonException("존재하지 않거나 잘못 입력된 번호입니다.");
+	public String findMemerPwByMobile(String memberId, String name, String mobile) {
+		String tmpMemberPw;
+		
+		boolean result = memberDao.findMemerPwByMobile(memberId, name, mobile);
+		
+		if (result) {
+			tmpMemberPw = util.getSecureAlphabetString(12, true, true);
+			memberDao.setMemberPw(memberId, tmpMemberPw);
+			return tmpMemberPw;
+		} else {
+			
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * 비밀번호 찾기2 - 이메일
+	 * @param memberId 아이디
+	 * @param name 이름 
+	 * @param mobile 이메일
+	 * @return 아이디
+	 */
+	public String findMemerPwByEmail(String memberId, String name, String mobile) {
+		String tmpMemberPw;
+		
+		boolean result = memberDao.findMemerPwByMobile(memberId, name, mobile);
+		
+		if (result) {
+			tmpMemberPw = util.getSecureAlphabetString(12, true, true);
+			memberDao.setMemberPw(memberId, tmpMemberPw);
+			return tmpMemberPw;
+		} else {
+			
+		}
+		
 		return null;
 	}
 	
@@ -131,7 +157,7 @@ public class ManagementService {
 	 * @param dto 회원
 	 * @throws RecordNotFoundException 
 	 */
-	public boolean setMembers(Member dto) throws RecordNotFoundException {
+	public boolean setMembers(Member dto) {
 		return false;
 	}
 	
@@ -143,8 +169,8 @@ public class ManagementService {
 	 * @return 아이디와 비밀번호가 존재하면 true, 아니면 오류 
 	 * @throws RecordNotFoundException 
 	 */
-	public boolean setMemberPw(String memberId, String memberPw, String modifyMemberPw) throws RecordNotFoundException {
-		return false;
+	public boolean setMemberPw(String memberId, String memberPw, String modifyMemberPw) {
+		return memberDao.setMemberPw(memberId, memberPw, modifyMemberPw);
 	}
 	
 	
@@ -154,7 +180,7 @@ public class ManagementService {
 	 * @return 회원이 존재하면 탈퇴 후 true, 존재하지 않으면 오류
 	 * @throws RecordNotFoundException
 	 */
-	public boolean removeMember(Member dto) throws RecordNotFoundException { 
+	public boolean removeMember(Member dto) { 
 		return false;
 	}
 	
@@ -180,7 +206,7 @@ public class ManagementService {
 	 * @return 회원 존재하면 날짜, 수입, 수입출처 등록되면 true, 아니면 false
 	 * @throws CommonException
 	 */
-	public boolean addIncome(String date, int revenue, String source) throws CommonException {
+	public boolean addIncome(String date, int revenue, String source) {
 				return false;
 	}
 	
@@ -195,7 +221,7 @@ public class ManagementService {
 	 * @return 아이디가 존재하고, 수입이 등록되면 true 반환, 아니면 false 반환 
 	 * @throws CommonException
 	 */
-	public boolean addIncome(Member dto, String date, int revenue, String source) throws CommonException {
+	public boolean addIncome(Member dto, String date, int revenue, String source) {
 			return false;
 	}
 	
@@ -223,9 +249,9 @@ public class ManagementService {
 	 * @param finishDate
 	 * @throws RecordNotFoundException
 	 */
-	public void getDateIncome(String startDate, String finishDate) throws RecordNotFoundException {
+	public void getDateIncome(String startDate, String finishDate) {
 		
-		}
+	}
 			
 	/**
 	 * 수입 시작날짜 조회 메서드
@@ -250,7 +276,7 @@ public class ManagementService {
 	 * @return 수입출처별 수입의 합계, sumItemIncome
 	 * @throws RecordNotFoundException
 	 */
-	public int getItemIncome(String source) throws RecordNotFoundException {
+	public int getItemIncome(String source) {
 		return 0;
 	}
 
@@ -271,7 +297,7 @@ public class ManagementService {
 	 * @return 현재 예산이 0원이고 현재 로그인된 아이디가 존재하면 true 반환, 아니면 false 반환
 	 * @throws DuplicateException
 	 */
-	public boolean addBudget(Budget budgetDto) throws DuplicateException {
+	public boolean addBudget(Budget budgetDto) {
 	
 		return false;
 	}
@@ -301,7 +327,7 @@ public class ManagementService {
 		 * @return 현재 예산이 0원이 아니고, 현재 아이디가 존재하는 아이디라면 true이고, 아니면 false
 		 * @throws RecordNotFoundException
 		 */
-		public boolean removeBudget() throws RecordNotFoundException{
+		public boolean removeBudget() {
 			return false;
 		
 		}
@@ -318,7 +344,7 @@ public class ManagementService {
 		 * @return 현재 아이디가 존재하고 지출이 등록되면 true, 아니면 false
 		 * @throws CommonException
 		 */
-		public boolean addSpend(String currentDate, int spend, String spendType, String spendMethod) throws CommonException {
+		public boolean addSpend(String currentDate, int spend, String spendType, String spendMethod) {
 			return false;
 			
 		}
@@ -334,7 +360,7 @@ public class ManagementService {
 		 * @return 현재 아이디가 존재하고 지출이 등록되면 true, 아니면 false
 		 * @throws CommonException
 		 */
-		public boolean addSpend(Member dto, String currentDate, int spend, String spendType, String spendMethod) throws CommonException {
+		public boolean addSpend(Member dto, String currentDate, int spend, String spendType, String spendMethod) {
 			return false;
 			
 		}
@@ -353,7 +379,7 @@ public class ManagementService {
 		 * @return 지출 항목에 해당되는 값들 더하여서 sumTypeSpend 반환
 		 * @throws RecordNotFoundException
 		 */
-		public int getTypeSpend(String spendType) throws RecordNotFoundException {
+		public int getTypeSpend(String spendType) {
 				return 0;
 			}
 
@@ -381,7 +407,7 @@ public class ManagementService {
 		 * @param finishDate 끝 날짜
 		 * @throws RecordNotFoundException
 		 */
-		public void getDateSpend(String startDate, String finishDate) throws RecordNotFoundException {
+		public void getDateSpend(String startDate, String finishDate) {
 			
 		}
 		
@@ -391,7 +417,7 @@ public class ManagementService {
 		 * @return 사용자가 선택한 결제수단의 지출 총 합
 		 * @throws RecordNotFoundException
 		 */
-		public int getMethodSpend(String spendMethod) throws RecordNotFoundException {
+		public int getMethodSpend(String spendMethod) {
 			return 0;
 		}
 

@@ -287,7 +287,7 @@ public class MemberDao {
 	}
 	
 	/**
-	 * 비밀번호 찾기 : 아이디, 휴대폰
+	 * 비밀번호 찾기 01 - 휴대폰
 	 * @param member_id 아이디
 	 * @param name 이름
 	 * @param mobile 휴대폰
@@ -304,7 +304,7 @@ public class MemberDao {
 
 					
 
-					String sql = "select member_pw from member where mobile=? and name=? and member_id=?";
+					String sql = "select memberpw from member where mobile=? and name=? and memberid=?";
 					 stmt = conn.prepareStatement(sql);
 					
 					// 3.
@@ -319,7 +319,7 @@ public class MemberDao {
 					//5. 
 					while(rs.next()) {
 						
-						String memberPw = rs.getString("member_pw");
+						String memberPw = rs.getString("memberpw");
 						return true;
 						
 					} 
@@ -361,7 +361,7 @@ public class MemberDao {
 
 			
 
-			String sql = "select member_pw from member where email=? and name=? and member_id=?";
+			String sql = "select memberpw from member where email=? and name=? and memberid=?";
 			stmt = conn.prepareStatement(sql);
 			
 			// 3.
@@ -376,7 +376,7 @@ public class MemberDao {
 			//5. 
 			while(rs.next()) {
 				
-				String memberPw = rs.getString("member_pw");
+				String memberPw = rs.getString("memberpw");
 				return true;
 				
 			} 
@@ -396,6 +396,46 @@ public class MemberDao {
 		
 		
 		return false;
+	} 
+	
+
+	/**
+	 * 회원 비밀번호 변경 2
+	 * @param memberId
+	 * @param tmpMemberPw
+	 */
+	public boolean setMemberPw(String memberId, String tmpMemberPw) {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		
+		try {
+			// 1,2. 드라이버 로딩, db 서버와 연결
+			conn = factory.getConnection();
+			
+			// 3. 서버와 연결할 통로 생성, 비밀번호 변경
+			String sql = "update member set memberpw=? where memberid=?";
+			stmt = conn.prepareStatement(sql);
+			
+			stmt.setString(1, tmpMemberPw);
+			stmt.setString(2, memberId);
+			
+			//4. 통로이용 sql 실행 요청 - sql구문이 c,u,d일 경우에 사용 stmt.executeUpdate()
+			int rows = stmt.executeUpdate();
+			if(rows > 0) {
+				System.out.println(tmpMemberPw);
+				return true;
+			}
+			
+		} catch (SQLException e) {
+			System.out.println("[오류] 비밀번호(임시발급) 변경");
+			e.printStackTrace();
+		} finally {
+			
+			//6. 자원해제 : finally 구문으로 변경 수정
+			// 공장에게 위임
+			factory.close(conn, stmt);
+		}
+		return true;
 	}
 
 	
@@ -460,19 +500,46 @@ public class MemberDao {
 	 * @param dto 회원
 	 * @throws RecordNotFoundException 
 	 */
-	public boolean setMembers(Member dto) throws RecordNotFoundException {
+	public boolean setMembers(Member dto) {
 		return false;
 	}
 	
 	/**
-	 * 회원 비밀번호 변경
+	 * 회원 비밀번호 변경2
 	 * @param memberId 아이디
 	 * @param memberPw 비밀번호
 	 * @param modifyMemberPw 바꿀 비밀번호
 	 * @return 아이디와 비밀번호가 존재하면 true, 아니면 오류 
 	 * @throws RecordNotFoundException 
 	 */
-	public boolean setMemberPw(String memberId, String memberPw, String modifyMemberPw) throws RecordNotFoundException {
+	public boolean setMemberPw(String memberId, String memberPw, String modifyMemberPw) {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		
+		// 1. 드라이버 로딩, db 서버와 연결
+		conn = factory.getConnection();
+		
+		try {
+			// 2. 통로 생성 , 서버와 통로 연결
+			String sql = "update member set memberpw=? where memberid=? and memberPw=?";
+			stmt = conn.prepareStatement(sql);
+			stmt.setString(1, modifyMemberPw);
+			stmt.setString(2, memberId);
+			stmt.setString(3, memberPw);
+			
+			//3. sql구문 실행 요청, 통로 이용
+			// c u d => stmt.executeUpdate()
+			int rows = stmt.executeUpdate();
+			
+			if(rows > 0) {
+				return true;
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		return false;
 	}
 	
@@ -483,7 +550,7 @@ public class MemberDao {
 	 * @return 회원이 존재하면 탈퇴 후 true, 존재하지 않으면 오류
 	 * @throws RecordNotFoundException
 	 */
-	public boolean removeMember(Member dto) throws RecordNotFoundException { 
+	public boolean removeMember(Member dto) { 
 		return false;
 	}
 	
@@ -523,5 +590,6 @@ public class MemberDao {
 		
 		return 0;
 	}
+
 
 }
