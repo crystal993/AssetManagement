@@ -51,3 +51,15 @@
 
 
 ## 👩‍🏫 CLASS DIAGRAM
+
+
+
+## 테이블 관계도
+![](https://images.velog.io/images/ggg5483/post/17d7385c-c016-4fb5-b34e-a631fa18f2ab/FINANCIAL2.png)
+
+
+## 📄 테이블 설명
+
+## 📜 이 프로젝트의 기술 구현 방식
+
+## ✨ Issues
