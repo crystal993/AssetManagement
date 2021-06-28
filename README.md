@@ -51,18 +51,18 @@
 
 
 ## 👩‍🏫 CLASS DIAGRAM
-#### 0.0.0 설계
+#### ver.0.0.0 설계
 ![](https://images.velog.io/images/ggg5483/post/ea7d8484-f924-4da0-80c3-5228dd490bdc/ClassDiagram%EC%88%98%EC%A0%95%EC%A0%84.jpg)
 
-#### 1.0.0 콘솔버전
+#### ver.1.0.0 콘솔
 ![](https://images.velog.io/images/ggg5483/post/933336d5-8c2f-4b92-9bf8-9070ff2d7061/ClassDiagram2.jpg)
 
 => 클래스 분리설계를 하지 못했다. 
 
-#### 2.0.0 JDBC 연동
+#### ver.2.0.0 JDBC 연동
 ![](https://images.velog.io/images/ggg5483/post/6e863059-1a85-42fb-943e-5862099ff818/%EA%B0%80%EA%B3%84%EB%B6%80_jdbc_ClassDiagram1.jpg)
 
-=> MVC Pattern 을 적용하여 dao클래스는 singleton patern으로 설계했다. 
+=> MVC Pattern 을 적용하여 DB테이블 당 하나의 dao클래스가 존재하도록 dao클래스는 singleton patern으로 설계했다. 
 
 
 ## 테이블 관계도
